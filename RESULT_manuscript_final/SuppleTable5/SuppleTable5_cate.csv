@@ -1,0 +1,10 @@
+Phenotype,Significant loci in KoGES160K,Significant loci in KoGES70K,Overlapping loci,Novel loci in KoGES160K,Loci only in KoGES70K
+Breast cancer,2,0,0,2,0
+Diabetes mellitus,102,12,42,60,0
+Gastric cancer,3,0,0,3,0
+Hyperlipidemia,45,15,28,17,0
+Hypertension,113,26,49,64,3
+Lung cancer,0,0,0,0,0
+Thyroid cancer,6,0,0,6,0
+Thyroid disease,21,5,18,3,0
+Uterine cancer,1,0,0,1,0

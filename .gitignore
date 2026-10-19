@@ -1,0 +1,9 @@
+# Ignore everything by default
+/*
+
+# Keep .gitignore
+!/.gitignore
+
+# Track only these two directories
+!/CODE_manuscript_final/
+!/RESULT_manuscript_final/

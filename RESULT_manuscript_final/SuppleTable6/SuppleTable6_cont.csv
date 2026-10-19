@@ -1,0 +1,47 @@
+Phenotype,"EAS, EUR both known",EAS cohort known,EUR cohort known,GWAS Catalog-only known,Novel
+Red blood cell count (RBC),223,3,46,1,0
+White blood cell count (WBC),113,0,14,0,0
+Mean corpuscular volume (MCV),299,0,30,0,0
+Mean corpuscular hemoglobin (MCH),304,0,34,0,0
+Mean corpuscular hemoglobin concentration (MCHC),109,0,17,2,1
+Platelet count (Plt),300,0,37,0,0
+Hematocrit (HCT),83,2,19,3,0
+Hemoglobin (Hb),124,4,44,8,0
+FEV1,0,0,2,0,1
+FEV1/FVC,0,1,0,0,0
+FVC,0,0,1,0,0
+HDL-cholesterol (HDL-C),517,0,44,2,0
+LDL-cholesterol (LDL-C),243,10,30,7,1
+Triglycerides (TG),310,1,47,2,2
+Total cholesterol (TC),315,9,22,12,0
+Apolipoprotein A,0,0,113,6,2
+Apolipoprotein B,0,0,83,1,0
+Vit.D,0,0,25,0,3
+Iron,0,0,17,0,4
+Folate,0,0,23,2,4
+Albumin (Alb),93,3,19,6,2
+Uric acids (UA),494,12,50,4,17
+Homocysteine,0,0,0,83,14
+Hip,45,7,44,1,21
+Body mass index (Body mass index (BMI)),114,0,58,0,0
+Waist-to-hip ratio (WHR),0,13,0,21,2
+Waist,25,0,42,9,11
+Body weight (BW),154,0,80,0,1
+Body height,773,0,67,0,0
+Aspartate transaminase (AST),112,4,12,5,0
+Alanine aminotransferase (ALT),103,1,13,5,1
+Alkaline phosphatase (ALP),77,0,4,0,0
+r_Gtp (Gamma glutamyl transferase),278,4,25,7,2
+Total Bilirubin (TBil),269,1,3,6,0
+Blood urea nitrogen (BUN),125,5,32,4,14
+eGFR (CKD-EPI),85,0,53,1,0
+Cystatin C,0,0,40,0,3
+Phosphate,14,0,7,0,6
+Serum creatinine (sCr),114,0,21,3,0
+HbA1C,92,0,37,1,0
+Insulin,0,0,0,2,4
+Glucose,160,14,57,4,1
+C-peptide,0,0,0,2,4
+Systolic blood pressure (SBP),63,1,13,1,0
+Diastolic blood pressure (DBP),54,0,12,2,0
+Pulse,40,0,13,2,0

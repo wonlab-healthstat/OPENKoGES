@@ -1,0 +1,26 @@
+Phenotype,Significant loci in KoGES160K,Significant loci in KoGES70K,Overlapping loci,Novel loci in KoGES160K,Loci only in KoGES70K
+Albumin (Alb),123,45,86,37,0
+Alanine aminotransferase (ALT),123,30,79,44,2
+Aspartate transaminase (AST),133,47,106,27,0
+Body mass index (BMI),172,37,59,113,3
+Blood urea nitrogen (BUN),180,76,128,52,2
+Serum creatinine (sCr),138,47,65,73,3
+Diastolic blood pressure (DBP),68,29,38,30,1
+Glucose,236,79,171,65,0
+Hemoglobin (Hb),180,47,94,86,2
+HbA1C,130,51,81,49,0
+HDL-cholesterol (HDL-C),563,199,493,70,0
+Body height,840,231,532,308,3
+Hip,118,34,41,77,6
+LDL-cholesterol (LDL-C),291,86,238,53,0
+Platelet count (Plt),337,134,233,104,2
+Pulse,55,20,27,28,1
+Gamma glutamyl transferase (r_GTP),316,108,252,64,0
+Red blood cell count (RBC),273,108,187,86,2
+Systolic blood pressure (SBP),78,24,40,38,1
+Total bilirubin (TBil),279,76,260,19,2
+Total cholesterol (TC),358,100,274,84,1
+Triglycerides (TG),362,128,288,74,0
+Waist,87,17,27,60,0
+White blood cell count (WBC),127,44,84,43,0
+Body weight (BW),235,56,78,157,3

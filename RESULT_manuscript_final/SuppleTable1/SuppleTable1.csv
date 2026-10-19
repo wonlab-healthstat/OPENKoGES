@@ -1,0 +1,19 @@
+"cohort_type","follow_up_label","Survey Period","Number of Participants(n)","Number of Genotyped Participants(n)","Number of Variables(n)"
+"AS","Baseline","2001~2002",10030,8198,2417
+"AS","1st Follow-up","2003~2004",8603,7184,2114
+"AS","2nd Follow-up","2005~2006",7515,6358,2913
+"AS","3rd Follow-up","2007~2008",6688,5693,2331
+"AS","4th Follow-up","2009~2010",6665,5727,2589
+"AS","5th Follow-up","2011~2012",6238,5331,2665
+"AS","6th Follow-up","2013~2014",5906,5025,2485
+"AS","7th Follow-up","2015~2016",6318,5345,2177
+"AS","8th Follow-up","2017~2018",6157,5212,2267
+"AS","9th Follow-up","2019~2020",5854,4949,2328
+"AS","10th Follow-up","2021~2022",5511,4658,1701
+"CT","Baseline","2004~2013",173195,130904,2361
+"CT","1st Follow-up","2012~2016",65608,55905,1590
+"NC","Baseline","2005~2011",28337,22481,1593
+"NC","1st Follow-up","2007~2014",12463,10876,1400
+"NC","2nd Follow-up","2008~2016",11399,9890,1400
+"NC","3rd Follow-up","2011~2016",6423,5478,1399
+"NC","4th Follow-up","2014~2016",1449,1241,748

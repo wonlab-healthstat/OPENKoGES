@@ -1,0 +1,115 @@
+EAS COJO dual-mode V5
+=====================
+
+One codebase supports two runs via EAS_RUN_MODE.
+
+1) Primary run
+--------------
+Command:
+  EAS_RUN_MODE=primary bash run_EAS_COJO_dualmode_V5.sh
+
+Definition:
+  - EAS evidence only (BBJ/TWB/TPMI)
+  - source-specific 1000G EAS clumping
+  - direct KoGES-exact rescue is still identified/audited, but is NOT inserted
+    into the primary condition set
+  - at least one 1000G EAS clump-defined signal is required for a target to be
+    ready
+  - Step1 (shared with V4):
+      COJO/EAS-only/step1
+  - 1000G clumping panel:
+      COJO/1000G_LD_panel_indel
+  - default Step2 directory:
+      COJO/EAS-only/ancestry_clumped_1000G_V5_EAS_primary_clumponly
+  - default MA directory:
+      COJO/EAS-only/GCTA_ma_V5_EAS_primary_clumponly
+  - default GCTA directory:
+      COJO/EAS-only/GCTA_conditional_V5_EAS_primary_clumponly
+  - default logs / KoGES LD reference:
+      COJO/EAS-only/logs_V5_EAS_primary_clumponly
+      COJO/EAS-only/KoGES_COJO_LD_reference_V5_EAS_primary_clumponly
+
+2) Rescue-augmented sensitivity run
+-----------------------------------
+Command:
+  EAS_RUN_MODE=sensitivity bash run_EAS_COJO_dualmode_V5.sh
+
+Definition:
+  - same 1000G EAS clump-defined condition set
+  - plus 1000G-unmatched external EAS GWS variants that resolve exactly to one
+    KoGES variant
+  - same-source rescue-rescue and rescue-clump redundancy can be collapsed by
+    KoGES r^2 >= 0.9; a 1000G clump representative outranks a rescue SNP
+  - rescue-only targets are allowed as sensitivity evidence
+  - default Step2 directory:
+      COJO/EAS-only/ancestry_clumped_1000G_V5_EAS_sensitivity_rescue
+  - default MA directory:
+      COJO/EAS-only/GCTA_ma_V5_EAS_sensitivity_rescue
+  - default GCTA directory:
+      COJO/EAS-only/GCTA_conditional_V5_EAS_sensitivity_rescue
+  - default logs / KoGES LD reference:
+      COJO/EAS-only/logs_V5_EAS_sensitivity_rescue
+      COJO/EAS-only/KoGES_COJO_LD_reference_V5_EAS_sensitivity_rescue
+
+Step3c final-verdict safeguards
+-------------------------------
+- independent and not-conditionally-GWS verdicts require
+  condition_set_effectively_complete_GCTA == TRUE.
+- high-LD is kept as a separate evidence category and does not require an
+  effectively complete conditional model; it requires the Step3b high-LD logic
+  based on directly measured lead-condition KoGES LD in a non-finite/collinear
+  COJO setting.
+- paper-facing output includes:
+    condition_set_effectively_complete_GCTA
+    GCTA_run_status
+    EAS_run_mode
+    primary_condition_set
+
+Recommended order if both runs will be performed
+------------------------------------------------
+  EAS_RUN_MODE=primary     bash run_EAS_COJO_dualmode_V5.sh
+  EAS_RUN_MODE=sensitivity bash run_EAS_COJO_dualmode_V5.sh
+  Rscript --vanilla step3d.compare_EAS_dualmode_V5.R
+
+The two runs use separate output directories automatically and therefore do not
+reuse Step2/Step3 products across modes.
+
+Dual-mode comparison (Step3d)
+-----------------------------
+Step3d uses the primary integrated table as the master denominator and joins
+the rescue-augmented sensitivity result by target_id.  It verifies that every
+primary-ready target is sensitivity-ready and that the primary 1000G-clump
+condition set is a subset of the corresponding sensitivity condition set.
+
+The comparison status distinguishes:
+  - robust_independent_after_rescue_sensitivity
+  - independence_sensitive_to_direct_KoGES_rescue
+  - sensitivity_unassessable
+  - primary_not_independent
+  - sensitivity_only_rescue_target_no_primary_claim
+
+Only the first category supports a robust additional-independent-association
+claim.  A sensitivity-only rescue target is retained as sensitivity evidence,
+not as a primary result.
+
+Default comparison output:
+  COJO/EAS-only/GCTA_conditional_V5_EAS_dualmode_comparison.tsv
+
+Files
+-----
+- step2.clump_joint_cojo_conditions_1000G_EAS_dualmode_V5.R
+- step3a.convert_bolt_sumstats_to_gcta_ma_EAS_dualmode_V5.R
+- step3b.run_joint_cojo_conditional_gcta_EAS_dualmode_V5.R
+- step3c.merge_joint_cojo_conditional_results_EAS_dualmode_V5.R
+- step3d.compare_EAS_dualmode_V5.R
+- run_EAS_COJO_dualmode_V5.sh
+
+Shared engines expected in ../shared
+--------------------------------------------------
+- step3a.convert_bolt_sumstats_to_gcta_ma_FINAL_4.R
+- step3b.run_joint_cojo_conditional_gcta_FINAL_V4.R
+- build_cojo_ld_reference.sh
+
+1000G clumping panel
+--------------------
+  COJO/1000G_LD_panel_indel

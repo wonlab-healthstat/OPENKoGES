@@ -1,0 +1,32 @@
+column	description
+Phenotype	KoGES continuous phenotype display name
+Lead variant (rsID)	KoGES lead variant rsID
+Variant ID	Variant ID as chr:pos:ref:alt (GRCh37)
+Chromosome	Chromosome (GRCh37)
+Base pair position (GRCh37)	Base-pair position (GRCh37)
+Variant type	Variant class (SNV / INDEL / MNV)
+Nearest gene	Nearest gene from ANNOVAR annotation of the lead variant
+Effect allele	Effect allele (EA) used for beta sign
+Other allele	Other / non-effect allele (NEA)
+REF	Genomic reference allele
+ALT	Genomic alternate allele
+EAF	Effect-allele frequency in KoGES
+MAF	Minor-allele frequency in KoGES
+N	GWAS sample size for the phenotype
+Marginal beta	Marginal (unconditional) BOLT-LMM beta
+Marginal SE	Marginal (unconditional) BOLT-LMM SE
+Marginal P	Marginal (unconditional) association P
+Conditional beta	GCTA-COJO conditional beta after conditioning on all EAS prior candidate variants (sensitivity: 1000G clump + direct KoGES-exact rescue)
+Conditional SE	GCTA-COJO conditional SE
+Conditional P	GCTA-COJO conditional P (genome-wide significance threshold 5e-8)
+n condition SNPs requested	Number of condition SNPs requested for GCTA --cojo-cond
+n condition SNPs retained by GCTA	Number of condition SNPs retained in the GCTA conditional model
+n condition SNPs from 1000G clumps	Number of condition SNPs from 1000G EAS clump-defined signals
+n condition SNPs from direct KoGES rescue	Number of condition SNPs from direct KoGES-exact rescue
+Condition SNPs retained by GCTA	Semicolon-separated rsIDs of condition SNPs retained by GCTA
+Condition set effectively complete	Whether the GCTA condition set was effectively complete
+Final COJO status (sensitivity)	Paper-facing COJO status from the EAS sensitivity run
+Dual-mode robustness status	Dual-mode robustness label from primary vs sensitivity comparison
+target_id	Internal COJO target identifier
+lead_row_id	Internal lead row index
+Phenotype file stem	BOLT result file stem / phenotype code

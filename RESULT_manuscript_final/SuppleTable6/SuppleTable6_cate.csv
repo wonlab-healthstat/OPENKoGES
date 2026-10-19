@@ -1,0 +1,25 @@
+Phenotype,"EAS, EUR both known",EAS cohort known,EUR cohort known,GWAS Catalog-only known,Novel
+Coronary artery disease,1,1,0,0,0
+Cerebrovascular disease,0,0,0,0,1
+Hypertension,79,0,30,0,4
+Hyperlipidemia,44,0,1,0,0
+Diabetes mellitus,95,0,7,0,0
+Fatty liver,0,0,0,1,5
+Gout,5,0,1,1,0
+Chronic kidney disease (CKD),7,0,0,0,1
+Breast cancer,2,0,0,0,0
+Gastric cancer,2,1,0,0,0
+Thyroid cancer,4,2,0,0,0
+Uterine cancer,0,0,0,0,1
+Allergic disease,2,0,1,0,0
+Chronic lung disease,0,0,0,0,1
+Chronic gastritis,0,0,0,0,1
+Peptic ulcer,3,0,0,0,1
+Chronic gastritis / Peptic ulcer,1,0,0,0,0
+Gallbladder disease,1,0,0,0,1
+Osteoporosis,0,0,2,0,0
+Fracture,0,0,1,0,0
+Cataract,0,1,0,1,0
+Periodontal Disease,0,0,0,0,1
+Thyroid disease,19,0,2,0,0
+Neurosis,0,0,0,0,1
