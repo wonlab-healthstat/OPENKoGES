@@ -1,0 +1,26 @@
+KoGES 70K loci not recovered in KoGES 160K (Supplementary Table 5)
+Total only-in-70K loci: 37
+Marginal 70K GWS (5e-8 > P >= 1e-9): 34 / 37
+Found in 160K sumstats: 37 / 37
+Same direction of effect in 160K (allele-aligned): 37 / 37
+Nominally significant in 160K (P < 0.05): 36 / 37
+P < 1e-5 in 160K: 18 / 37
+Loci in phenotypes with updated definitions: 0 / 37 [PHENOS_DEFINITION_UPDATED is empty; set in SuppleTable5.R if needed]
+
+Per-phenotype only-in-70K counts:
+  Hip: 6
+  Body mass index (BMI): 3
+  Serum creatinine (sCr): 3
+  Body height: 3
+  Body weight (BW): 3
+  Hypertension: 3
+  Alanine aminotransferase (ALT): 2
+  Blood urea nitrogen (BUN): 2
+  Hemoglobin (Hb): 2
+  Platelet count (Plt): 2
+  Red blood cell count (RBC): 2
+  Total bilirubin (TBil): 2
+  Diastolic blood pressure (DBP): 1
+  Pulse: 1
+  Systolic blood pressure (SBP): 1
+  Total cholesterol (TC): 1
