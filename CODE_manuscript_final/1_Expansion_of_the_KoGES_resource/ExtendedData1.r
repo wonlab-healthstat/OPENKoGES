@@ -15,9 +15,14 @@
 #   Genotyped IDs:
 #     .../KBAv1_KoGES_QCed_COMMON_Imputed_KRPphase2_RSupdated.fam
 #
-# Outputs:
-#   RESULT_manuscript_final/ExtendedData/ExtendedData1_categorical.csv
-#   RESULT_manuscript_final/ExtendedData/ExtendedData1_continuous.csv
+# Outputs (analysis intermediates):
+#   DATA_manuscript_final/ExtendedData/ExtendedData1_categorical.csv
+#   DATA_manuscript_final/ExtendedData/ExtendedData1_continuous.csv
+#
+# Publication sheet (caption + category/unit layout):
+#   After this script, run:
+#     python3 CODE_manuscript_final/ExtendedData_export/export_ExtendedData_publication.py
+#   → RESULT_manuscript_final/ExtendedData/Extended Data1.xlsx
 #
 # Usage:
 #   Rscript ExtendedData1.r
@@ -33,7 +38,7 @@ suppressPackageStartupMessages({
 cate_file <- "/home2/sjim/openKoGES/DATA_manuscript_final/Extended_Data/raw/Merge_cate_cuminci.csv"
 conti_file <- "/home2/sjim/openKoGES/DATA_manuscript_final/Extended_Data/raw/Merge_conti.csv"
 fam_file <- "/data6/OpenGWAS/KBA160K/Genotype/KBAv1_KoGES_QCed_COMMON_Imputed_KRPphase2_RSupdated.fam"
-out_dir <- "/home2/sjim/openKoGES/RESULT_manuscript_final/ExtendedData"
+out_dir <- "/home2/sjim/openKoGES/DATA_manuscript_final/ExtendedData"
 dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
 
 # -----------------------------------------------------------------------------

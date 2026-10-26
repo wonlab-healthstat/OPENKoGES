@@ -1,17 +1,9 @@
-"Section","Metric","EAS_n","EAS_denominator","EAS_percent","EAS","EUR_n","EUR_denominator","EUR_percent","EUR","Notes"
-"A. Overall external replication","Analyzed phenotype-lead associations",246,,,"246",205,,,"205","Total OpenKoGES phenotype-lead associations in Extended Data: 336."
-"A. Overall external replication","Direction concordant with KoGES",239,246,97.1544715447155,"239/246 (97.2%)",168,205,81.9512195121951,"168/205 (82.0%)",
-"A. Overall external replication","Nominal replication",210,246,85.3658536585366,"210/246 (85.4%)",102,205,49.7560975609756,"102/205 (49.8%)",
-"A. Overall external replication","Bonferroni-corrected replication",151,246,61.3821138211382,"151/246 (61.4%)",77,205,37.5609756097561,"77/205 (37.6%)","Primary panel-level external-only IVW replication classification."
-"A. Overall external replication","Common-testable sensitivity (N=185; shared alpha=0.05/185)",115,185,62.1621621621622,"115/185 (62.2%)",72,185,38.9189189189189,"72/185 (38.9%)","Shared Bonferroni threshold = 0.00027027."
-"B. Replication among strictly novel associations","Strictly novel associations analyzable in panel",7,13,53.8461538461539,"7/13",2,13,15.3846153846154,"2/13","Strict novelty: Novel in EAS, EUR, and GWAS Catalog; N=13."
-"B. Replication among strictly novel associations","Nominal replication among analyzable strict-novel associations",2,7,28.5714285714286,"2/7 (28.6%)",0,2,0,"0/2 (0.0%)",
-"B. Replication among strictly novel associations","Bonferroni replication among analyzable strict-novel associations",1,7,14.2857142857143,"1/7 (14.3%)",0,2,0,"0/2 (0.0%)","Uses each panel's primary Bonferroni replication classification."
-"B. Replication among strictly novel associations","Common-testable strict-novel subset (N=2): Bonferroni replication",1,2,50,"1/2 (50.0%)",0,2,0,"0/2 (0.0%)","Restricted to strict-novel associations testable in both panels; uses the SAME shared threshold as the full common-testable analysis (0.05/N_common), not 0.05/N_strict_common."
-"C. Meta-analysis diagnostics and robustness","Associations with >=2 contributing external cohorts",19,246,7.72357723577236,"19/246 (7.7%)",94,205,45.8536585365854,"94/205 (45.9%)",
-"C. Meta-analysis diagnostics and robustness","All contributing cohorts directionally concordant with KoGES (k>=2)",18,19,94.7368421052632,"18/19 (94.7%)",60,94,63.8297872340426,"60/94 (63.8%)",
-"C. Meta-analysis diagnostics and robustness","Mixed external-cohort directions (k>=2)",1,19,5.26315789473684,"1/19 (5.3%)",33,94,35.1063829787234,"33/94 (35.1%)",
-"C. Meta-analysis diagnostics and robustness","High between-cohort heterogeneity (I2 >=50%; k>=2)",8,19,42.1052631578947,"8/19 (42.1%)",84,94,89.3617021276596,"84/94 (89.4%)","I2 reflects heterogeneity among external cohorts within the panel, not KoGES-vs-external heterogeneity."
-"C. Meta-analysis diagnostics and robustness","Panel direction concordant with KoGES among I2 >=50%",8,8,100,"8/8 (100.0%)",64,84,76.1904761904762,"64/84 (76.2%)",
-"C. Meta-analysis diagnostics and robustness","All contributing cohorts concordant with KoGES among I2 >=50%",7,8,87.5,"7/8 (87.5%)",55,84,65.4761904761905,"55/84 (65.5%)",
-"C. Meta-analysis diagnostics and robustness","IVW vs signed-Z Bonferroni replication classification agreement",246,246,100,"246/246 (100.0%)",141,204,69.1176470588235,"141/204 (69.1%)","Near-identical classification supports robustness of the replication conclusion to the evidence-combination method; it does not imply that a homogeneous common effect exists when I2 is high."
+Trait type,Classification,N,% of total EAS-novel,% of analyzed,"Shrinkage ratio (median, IQR)","KoGES/EAS beta ratio (median, IQR)",KoGES n > each cohort n,KoGES n > EAS panel total n
+Binary,Not analyzed in EAS panel,15,25.0%,—,0.080 (0.070–0.386),—,0/15 (0.0%),0/15 (0.0%)
+Binary,WC-sensitive + EAS GWS,0,0.0%,0.0%,—,—,—,—
+Binary,WC-sensitive + EAS nominal,21,35.0%,46.7%,0.590 (0.097–0.792),2.14x (1.61–2.58x),0/21 (0.0%),0/21 (0.0%)
+Binary,WC-sensitive + no EAS signal,13,21.7%,28.9%,0.360 (0.075–0.684),5.51x (4.21–14.97x),1/13 (7.7%),1/13 (7.7%)
+Binary,WC-robust + EAS GWS,0,0.0%,0.0%,—,—,—,—
+Binary,WC-robust + EAS nominal,10,16.7%,22.2%,0.944 (0.897–0.966),2.30x (2.20–2.68x),0/10 (0.0%),0/10 (0.0%)
+Binary,WC-robust + EAS non-sig,1,1.7%,2.2%,0.895 (0.895–0.895),4.57x (4.57–4.57x),0/1 (0.0%),0/1 (0.0%)
+Binary,Total EAS-novel,60,100%,45/60 analyzed,—,—,—,—

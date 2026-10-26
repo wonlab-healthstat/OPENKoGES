@@ -23,11 +23,15 @@
 # Optional (preferred if present; same 172 IDs):
 #   COJO/EUR-only/strict_novel_172/strict_novel_172_EUR_prior_inventory.tsv
 #
-# Outputs:
-#   RESULT_manuscript_final/ExtendedData/
+# Outputs (analysis intermediates):
+#   DATA_manuscript_final/ExtendedData/
 #     ExtendedData_conditionally_independent_172.csv
 #     ExtendedData_conditionally_independent_172.tsv
 #     ExtendedData_conditionally_independent_172_column_dictionary.tsv
+#
+# Publication sheet (manuscript Extended Data 3):
+#   python3 CODE_manuscript_final/ExtendedData_export/export_ExtendedData_publication.py
+#   → RESULT_manuscript_final/ExtendedData/Extended Data3.xlsx
 #
 # Usage:
 #   Rscript --vanilla build_ExtendedData_conditionally_independent_172.R
@@ -68,7 +72,7 @@ LEAD_ANNOT_FILE <- Sys.getenv(
 )
 OUT_DIR <- Sys.getenv(
   "OUT_DIR",
-  "/home2/sjim/openKoGES/RESULT_manuscript_final/ExtendedData"
+  "/home2/sjim/openKoGES/DATA_manuscript_final/ExtendedData"
 )
 
 STATUS_INDEPENDENT <- "conditionally_independent_given_EAS_prior_signals"

@@ -20,8 +20,13 @@
 #       KoGES_BOLT_leads_{UKB,FinnGen,MVP}_novelty_replication_cont.tsv
 #
 # Outputs
-#   - RESULT_manuscript_final/ExtendedData/ExtendedData2_continuous.xlsx
-#   - manuscript summary CSV is built by SuppleTable8.R → RESULT_manuscript_final/SuppleTable8/SuppleTable8_cont.csv
+#   - DATA_manuscript_final/ExtendedData/ExtendedData2_continuous.xlsx
+#     (multi-sheet analysis workbook used by Figures / SuppleTables)
+#   - Publication sheets (run after this script):
+#       python3 CODE_manuscript_final/ExtendedData_export/export_ExtendedData_publication.py
+#     → RESULT_manuscript_final/ExtendedData/Extended Data2A.xlsx
+#     → RESULT_manuscript_final/ExtendedData/Extended Data4A.xlsx / Extended Data4B.xlsx
+#   - manuscript summary CSV is built by SuppleTable7.R → RESULT_manuscript_final/SuppleTable7/SuppleTable7_cont.csv
 #
 # IMPORTANT
 #   - One row = one KoGES phenotype--lead association (lead_row_id).
@@ -39,7 +44,7 @@ suppressPackageStartupMessages({
 # 0. Paths + builders
 # ------------------------------------------------------------------------------
 catalog_tsv <- "/home2/sjim/openKoGES/DATA_manuscript_final/Extended_Data/Cont_lead_variants_GWAScatalog_novel.tsv"
-output_xlsx <- "/home2/sjim/openKoGES/RESULT_manuscript_final/ExtendedData/ExtendedData2_continuous.xlsx"
+output_xlsx <- "/home2/sjim/openKoGES/DATA_manuscript_final/ExtendedData/ExtendedData2_continuous.xlsx"
 
 ext_data_dir <- Sys.getenv("EXT_DATA_DIR", unset = "")
 if (!nzchar(ext_data_dir)) {

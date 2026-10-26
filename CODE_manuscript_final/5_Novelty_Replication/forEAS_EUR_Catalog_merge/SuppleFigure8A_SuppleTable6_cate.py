@@ -2,7 +2,7 @@
 """Create Cate (categorical / binary SAIGE) trait-level external-novelty figure.
 
 Input (default):
-  RESULT_manuscript_final/ExtendedData/ExtendedData2_categorical.xlsx
+  DATA_manuscript_final/ExtendedData/ExtendedData2_categorical.xlsx
   sheet Total_summary_Novelty_Repl
 
 Output (default):

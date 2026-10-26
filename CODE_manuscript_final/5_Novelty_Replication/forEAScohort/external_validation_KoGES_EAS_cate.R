@@ -727,6 +727,10 @@ col_ea <- pick_column(
 col_beta <- pick_column(nms, c("Beta", "BETA"), "BETA")
 col_se <- pick_column(nms, c("SE", "Standard error"), "standard error")
 col_p <- pick_column(nms, c("P", "P-value"), "P-value")
+col_eaf <- pick_column(
+  nms, c("EAF", "Effect allele frequency"), "effect allele frequency",
+  required = FALSE
+)
 
 lead <- data.table(
   lead_row_id = seq_len(nrow(lead_raw)),
@@ -758,7 +762,12 @@ lead <- data.table(
   koges_ea = norm_allele(lead_raw[[col_ea]]),
   koges_beta = suppressWarnings(as.numeric(lead_raw[[col_beta]])),
   koges_se = suppressWarnings(as.numeric(lead_raw[[col_se]])),
-  koges_p = suppressWarnings(as.numeric(lead_raw[[col_p]]))
+  koges_p = suppressWarnings(as.numeric(lead_raw[[col_p]])),
+  koges_eaf = if (!is.na(col_eaf)) {
+    suppressWarnings(as.numeric(lead_raw[[col_eaf]]))
+  } else {
+    NA_real_
+  }
 )
 
 lead[, koges_pheno_code := sub("\\.txt$", "", basename(koges_pheno_code))]
@@ -1377,6 +1386,25 @@ result[, replicated_primary := replicated_primary_direct]
 result[, replicated_nominal := replicated_nominal_direct]
 result[, replication_testable := replication_testable_direct]
 result[, mapped_for_replication := mapping_status_direct == "mapped_file_found"]
+
+# Direct-match exact EAF on the lead-level table (Cont-compatible column name).
+# At most one direct-match row per lead_row_id is expected.
+exact_eaf_direct <- per_match[
+  is_direct_match %in% TRUE,
+  .(lead_row_id, bbj_exact_eaf_aligned_a1)
+]
+if (anyDuplicated(exact_eaf_direct$lead_row_id)) {
+  stop(
+    "Multiple direct-match rows per lead_row_id when attaching ",
+    "bbj_exact_eaf_aligned_a1."
+  )
+}
+if ("bbj_exact_eaf_aligned_a1" %chin% names(result)) {
+  result[, bbj_exact_eaf_aligned_a1 := NULL]
+}
+result <- merge(
+  result, exact_eaf_direct, by = "lead_row_id", all.x = TRUE, sort = FALSE
+)
 
 if (nrow(result) != nrow(lead)) {
   stop("Internal error: result row count differs from lead row count.")

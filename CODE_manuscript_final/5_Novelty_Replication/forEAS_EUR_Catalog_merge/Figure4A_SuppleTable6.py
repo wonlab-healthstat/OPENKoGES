@@ -2,7 +2,7 @@
 """Create Cont (continuous) trait-level external-novelty figure (Figure 4A).
 
 Input (default):
-  RESULT_manuscript_final/ExtendedData/ExtendedData2_continuous.xlsx
+  DATA_manuscript_final/ExtendedData/ExtendedData2_continuous.xlsx
   sheet Total_summary_Novelty_Repl
 
 Output (default):

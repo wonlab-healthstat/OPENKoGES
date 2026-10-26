@@ -27,7 +27,7 @@ from matplotlib.ticker import FuncFormatter
 DEFAULT_INPUT_DIR = Path(
     os.environ.get(
         "MERGED_NOVELTY_DIR",
-        "/home2/sjim/openKoGES/RESULT_manuscript_final/ExtendedData",
+        "/home2/sjim/openKoGES/DATA_manuscript_final/ExtendedData",
     )
 )
 DEFAULT_OUTPUT_DIR = Path(

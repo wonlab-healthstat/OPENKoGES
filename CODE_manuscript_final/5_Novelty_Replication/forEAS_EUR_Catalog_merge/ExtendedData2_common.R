@@ -3,8 +3,8 @@
 # Sourced by ExtendedData2_cont.R and ExtendedData2_cate.R
 #
 # Excel outputs (set in the calling scripts):
-#   Cont -> RESULT_manuscript_final/ExtendedData/ExtendedData2_continuous.xlsx
-#   Cate -> RESULT_manuscript_final/ExtendedData/ExtendedData2_categorical.xlsx
+#   Cont -> DATA_manuscript_final/ExtendedData/ExtendedData2_continuous.xlsx
+#   Cate -> DATA_manuscript_final/ExtendedData/ExtendedData2_categorical.xlsx
 # ==============================================================================
 
 if (!requireNamespace("data.table", quietly = TRUE)) {

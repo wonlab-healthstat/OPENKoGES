@@ -1,0 +1,14 @@
+Extended Data 1. Summary of 89 genome-wide association study (GWAS) phenotypes in the Korean Genome and Epidemiology Study (KoGES) cohorts.
+Extended Data 2A. Genome-wide significant continuous trait associations identified in Korean Genome and Epidemiology Study (KoGES) with cross-cohort novelty classification and external replication results.
+Extended Data 2B. Genome-wide significant binary trait associations identified in Korean Genome and Epidemiology Study (KoGES) with cross-cohort novelty classification and external replication results.
+Extended Data 3. Conditionally independent genome-wide significant associations identified after conditioning on previously reported East Asian signals within Korean Genome and Epidemiology Study (KoGES). 
+Extended Data 4A. East Asian panel meta-analysis replication results for continuous trait associations identified in Korean Genome and Epidemiology Study (KoGES).
+Extended Data 4B. European panel meta-analysis replication results for continuous trait associations identified in Korean Genome and Epidemiology Study (KoGES).
+Extended Data 5A. East Asian panel meta-analysis replication results for binary trait associations identified in Korean Genome and Epidemiology Study (KoGES).
+Extended Data 5B. European panel meta-analysis replication results for binary trait associations identified in Korean Genome and Epidemiology Study (KoGES).
+Extended Data 6A. Winner's curse corrected effect estimates for genome-wide significant continuous trait phenotype–lead variant associations identified in the Korean Genome and Epidemiology Study (KoGES).
+Extended Data 6B. Winner's curse corrected effect estimates for genome-wide significant binary trait phenotype–lead variant associations identified in the Korean Genome and Epidemiology Study (KoGES).
+Extended Data 7A
+Extended Data 7B
+Extended Data 8A. SNP-based heritability estimates and pairwise genetic correlations for Korean Genome and Epidemiology Study (KoGES) phenotypes in Biobank Japan (BBJ), Taiwan Biobank (TWB), and the Taiwan Precision Medicine Initiative (TPMI).
+Extended Data 8B. SNP-based heritability estimates and pairwise genetic correlations for Korean Genome and Epidemiology Study (KoGES) phenotypes in UK Biobank (UKB), FinnGen, and the Million Veteran Program (MVP).

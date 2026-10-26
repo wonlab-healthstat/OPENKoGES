@@ -11,7 +11,7 @@ non-missing allele-matched gnomAD MAF. Manuscript denominators are 55 EAS and
 17 EUR associations.
 
 Input (default):
-  RESULT_manuscript_final/ExtendedData/ExtendedData2_categorical.xlsx
+  DATA_manuscript_final/ExtendedData/ExtendedData2_categorical.xlsx
     sheet Total_summary_Novelty_Repl
   KoGES_gnomAD_EAS_EUR_allele_matching_QC_cate.tsv
 
@@ -39,7 +39,7 @@ from matplotlib.ticker import FixedFormatter, FixedLocator
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 REPO_ROOT = SCRIPT_DIR.parents[2]
-DEFAULT_XLSX = REPO_ROOT / "RESULT_manuscript_final" / "ExtendedData" / "ExtendedData2_categorical.xlsx"
+DEFAULT_XLSX = REPO_ROOT / "DATA_manuscript_final" / "ExtendedData" / "ExtendedData2_categorical.xlsx"
 DEFAULT_CACHE = Path(
     "/data5/joh/openkoges/MAFplot_gnomAD_EAS_EUR/KoGES_gnomAD_EAS_EUR_allele_matching_QC_cate.tsv"
 )

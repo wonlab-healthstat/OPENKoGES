@@ -3,11 +3,18 @@
 # Threshold-based winner's-curse correction and external replication calibration
 # for all OpenKoGES phenotype-lead associations.
 #
-# Input:  RESULT_manuscript_final/ExtendedData/ExtendedData2_continuous.xlsx
+# Input:  DATA_manuscript_final/ExtendedData/ExtendedData2_continuous.xlsx
 # Outputs:
-#   RESULT_manuscript_final/ExtendedData/ExtendedData3.csv
+#   DATA_manuscript_final/ExtendedData/ExtendedData3.csv
+#     (winner's-curse analysis dump for continuous leads; NOT Extended Data 3)
 #   RESULT_manuscript_final/SuppleFigure9/SuppleFigure9.png
 #   RESULT_manuscript_final/SuppleTable10/SuppleTable10.csv
+#
+# Publication sheets (run after this script):
+#   python3 CODE_manuscript_final/ExtendedData_export/export_ExtendedData_publication.py
+#   → RESULT_manuscript_final/ExtendedData/Extended Data6A.xlsx  (from ExtendedData3.csv)
+#   → RESULT_manuscript_final/ExtendedData/Extended Data6B.xlsx
+# Note: manuscript Extended Data 3 is the 172 COJO table, not this CSV.
 #
 # WC correction conditions on the GWS threshold applied to P_BOLT_LMM_INF
 # (not a BETA/SE Wald Z):
@@ -20,8 +27,8 @@
 # 0. Settings
 ###############################################################################
 
-INPUT_DIR <- "/home2/sjim/openKoGES/RESULT_manuscript_final/ExtendedData"
-INPUT_XLSX <- file.path(INPUT_DIR, "ExtendedData2_continuous.xlsx")
+DATA_DIR <- "/home2/sjim/openKoGES/DATA_manuscript_final/ExtendedData"
+INPUT_XLSX <- file.path(DATA_DIR, "ExtendedData2_continuous.xlsx")
 RESULT_MANUSCRIPT_DIR <- "/home2/sjim/openKoGES/RESULT_manuscript_final"
 
 DISCOVERY_SHEET <- "Total_summary_Novelty_Repl"
@@ -222,8 +229,8 @@ discovery_corrected <- bind_cols(discovery, tibble::as_tibble(wc_matrix)) %>%
     bolt_vs_wald_z_diff = raw_z - wald_z
   )
 
-extended_data3_csv <- file.path(INPUT_DIR, "ExtendedData3.csv")
-dir.create(INPUT_DIR, recursive = TRUE, showWarnings = FALSE)
+extended_data3_csv <- file.path(DATA_DIR, "ExtendedData3.csv")
+dir.create(DATA_DIR, recursive = TRUE, showWarnings = FALSE)
 utils::write.csv(discovery_corrected, extended_data3_csv, row.names = FALSE)
 message("Wrote: ", normalizePath(extended_data3_csv, winslash = "/"))
 message(
