@@ -31,11 +31,11 @@ from novelty_figure_common import (
     run,
 )
 
-DEFAULT_FIGURE4_DIR = Path(
-    "/home2/sjim/openKoGES/RESULT_manuscript_final/Figure4"
-)
-DEFAULT_TABLE_PATH = Path(
-    "/home2/sjim/openKoGES/RESULT_manuscript_final/SuppleTable6/SuppleTable6_cont.csv"
+SCRIPT_DIR = Path(__file__).resolve().parent
+REPO_ROOT = SCRIPT_DIR.parents[2]
+DEFAULT_FIGURE4_DIR = REPO_ROOT / "RESULT_manuscript_final" / "Figure4"
+DEFAULT_TABLE_PATH = (
+    REPO_ROOT / "RESULT_manuscript_final" / "SuppleTable6" / "SuppleTable6_cont.csv"
 )
 
 CFG: dict[str, Any] = {
@@ -64,11 +64,11 @@ CFG: dict[str, Any] = {
     "colors": dict(SHARED_COLORS),
     "hatches": dict(SHARED_HATCHES),
     "hatch_edge_colors": dict(SHARED_HATCH_EDGE_COLORS),
-    # Figure 4A legend: show every novel subcategory as one "Novel 1 level" entry.
+    # Figure 4A legend: show every novel subcategory as one "Novel" entry.
     "legend_label_map": {
-        "EAS + EUR + GWAS catalog novel": "Novel 1 level",
-        "EAS + GWAS catalog novel (EUR not analyzed)": "Novel 1 level",
-        "EUR + GWAS catalog novel (EAS not analyzed)": "Novel 1 level",
+        "EAS + EUR + GWAS catalog novel": "Novel",
+        "EAS + GWAS catalog novel (EUR not analyzed)": "Novel",
+        "EUR + GWAS catalog novel (EAS not analyzed)": "Novel",
     },
     "trait_groups": [
         ("Hematology", [
@@ -158,7 +158,7 @@ CFG: dict[str, Any] = {
         "pct_label_fontsize": 12,
         "count_label_clip": True,
         "pct_label_clip": True,
-        "xlabel_fontsize": 13,
+        "xlabel_fontsize": 15,
         "title_fontsize": 14,
         "title_pad": 16,
         "tick_labelsize": 12,

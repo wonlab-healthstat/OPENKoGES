@@ -36,16 +36,28 @@ library(xts)
 library(data.table)
 library(SAIGE)
 
+
+.require_env_dir <- function(name) {
+  val <- Sys.getenv(name, unset = "")
+  if (!nzchar(val)) {
+    stop(sprintf("Set environment variable %s (directory path).", name), call. = FALSE)
+  }
+  normalizePath(val, winslash = "/", mustWork = FALSE)
+}
+
+
+OPENGWAS_DIR <- .require_env_dir("OPENGWAS_DIR")
+
 cat("SAIGE ", as.character(packageVersion("SAIGE")), "\n", sep = "")
 
 # -----------------------------------------------------------------------------
 # Paths
 # -----------------------------------------------------------------------------
-name.grm   <- "/data6/OpenGWAS/KBA160K/Result/SAIGE/SAIGE_grm"
-name.bfile <- "/data6/OpenGWAS/KBA160K/Genotype/KBAv1_KoGES_QCed_COMMON_Imputed_KRPphase2_RSupdated"
-pheno.dir  <- "/data6/OpenGWAS/KBA160K_longitudinal/Phenotype/DATA/SAIGE_cumulative_incidence"
-saige.dir  <- "/data6/OpenGWAS/KBA160K_longitudinal/Result/SAIGE_cumulative_incidence"
-sumstat.dir <- "/data6/OpenGWAS/KBA160K_longitudinal/Result/GWAS_sumstat"
+name.grm   <- file.path(OPENGWAS_DIR, "KBA160K", "Result", "SAIGE", "SAIGE_grm")
+name.bfile <- file.path(OPENGWAS_DIR, "KBA160K", "Genotype", "KBAv1_KoGES_QCed_COMMON_Imputed_KRPphase2_RSupdated")
+pheno.dir  <- file.path(OPENGWAS_DIR, "KBA160K_longitudinal", "Phenotype", "DATA", "SAIGE_cumulative_incidence")
+saige.dir  <- file.path(OPENGWAS_DIR, "KBA160K_longitudinal", "Result", "SAIGE_cumulative_incidence")
+sumstat.dir <- file.path(OPENGWAS_DIR, "KBA160K_longitudinal", "Result", "GWAS_sumstat")
 qc.dir      <- file.path(sumstat.dir, "SEfixed_QC")
 
 dir.create(saige.dir, recursive = TRUE, showWarnings = FALSE)

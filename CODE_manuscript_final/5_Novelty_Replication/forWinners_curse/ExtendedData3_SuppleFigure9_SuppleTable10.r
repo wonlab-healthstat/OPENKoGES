@@ -27,9 +27,9 @@
 # 0. Settings
 ###############################################################################
 
-DATA_DIR <- "/home2/sjim/openKoGES/DATA_manuscript_final/ExtendedData"
+DATA_DIR <- file.path(REPO_ROOT, "DATA_manuscript_final", "ExtendedData")
 INPUT_XLSX <- file.path(DATA_DIR, "ExtendedData2_continuous.xlsx")
-RESULT_MANUSCRIPT_DIR <- "/home2/sjim/openKoGES/RESULT_manuscript_final"
+RESULT_MANUSCRIPT_DIR <- file.path(REPO_ROOT, "RESULT_manuscript_final")
 
 DISCOVERY_SHEET <- "Total_summary_Novelty_Repl"
 DISCOVERY_SELECTION_P <- 5e-8
@@ -57,6 +57,28 @@ suppressPackageStartupMessages({
   library(ggplot2)
   library(patchwork)
 })
+
+
+# Resolve openKoGES repo root without hard-coding host absolute paths.
+.openkoges_repo_root <- function() {
+  env <- Sys.getenv("OPENKOGES_ROOT", unset = "")
+  if (nzchar(env)) return(normalizePath(env, winslash = "/", mustWork = FALSE))
+  args <- commandArgs(trailingOnly = FALSE)
+  fa <- sub("^--file=", "", args[startsWith(args, "--file=")])
+  start <- if (length(fa)) dirname(normalizePath(fa[[1]], winslash = "/", mustWork = FALSE)) else getwd()
+  d <- normalizePath(start, winslash = "/", mustWork = FALSE)
+  for (i in seq_len(12L)) {
+    if (dir.exists(file.path(d, "CODE_manuscript_final")) &&
+        dir.exists(file.path(d, "DATA_manuscript_final"))) {
+      return(d)
+    }
+    parent <- dirname(d)
+    if (identical(parent, d)) break
+    d <- parent
+  }
+  stop("Could not locate openKoGES root; set OPENKOGES_ROOT.", call. = FALSE)
+}
+REPO_ROOT <- .openkoges_repo_root()
 
 assert_columns <- function(data, required, sheet_name) {
   absent <- setdiff(required, names(data))

@@ -10,7 +10,7 @@ Output (default):
   RESULT_manuscript_final/SuppleTable6/SuppleTable6_cate.csv
 
 Novel subcategories (including Cate-only catalog novel) are shown as
-one "Novel 1 level" series, matching Figure 4A.
+one "Novel" series, matching Figure 4A.
 
 Example
 -------
@@ -35,11 +35,11 @@ from novelty_figure_common import (
     run,
 )
 
-DEFAULT_FIGURE_DIR = Path(
-    "/home2/sjim/openKoGES/RESULT_manuscript_final/SuppleFigure7"
-)
-DEFAULT_TABLE_PATH = Path(
-    "/home2/sjim/openKoGES/RESULT_manuscript_final/SuppleTable6/SuppleTable6_cate.csv"
+SCRIPT_DIR = Path(__file__).resolve().parent
+REPO_ROOT = SCRIPT_DIR.parents[2]
+DEFAULT_FIGURE_DIR = REPO_ROOT / "RESULT_manuscript_final" / "SuppleFigure7"
+DEFAULT_TABLE_PATH = (
+    REPO_ROOT / "RESULT_manuscript_final" / "SuppleTable6" / "SuppleTable6_cate.csv"
 )
 
 CFG: dict[str, Any] = {
@@ -80,10 +80,10 @@ CFG: dict[str, Any] = {
     },
     # Match Figure 4A: collapse all novel subcategories to one legend/plot series.
     "legend_label_map": {
-        "EAS + EUR + GWAS catalog novel": "Novel 1 level",
-        "EAS + GWAS catalog novel (EUR not analyzed)": "Novel 1 level",
-        "EUR + GWAS catalog novel (EAS not analyzed)": "Novel 1 level",
-        CATALOG_ONLY_NOVEL: "Novel 1 level",
+        "EAS + EUR + GWAS catalog novel": "Novel",
+        "EAS + GWAS catalog novel (EUR not analyzed)": "Novel",
+        "EUR + GWAS catalog novel (EAS not analyzed)": "Novel",
+        CATALOG_ONLY_NOVEL: "Novel",
     },
     "trait_groups": [
         ("Cardiometabolic", [
@@ -142,7 +142,7 @@ CFG: dict[str, Any] = {
         "pct_label_fontsize": 10,
         "count_label_clip": False,
         "pct_label_clip": False,
-        "xlabel_fontsize": 12,
+        "xlabel_fontsize": 14,
         "title_fontsize": 13,
         "title_pad": 10,
         "tick_labelsize": 11,

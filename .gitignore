@@ -7,3 +7,10 @@
 # Track only these two directories
 !/CODE_manuscript_final/
 !/RESULT_manuscript_final/
+
+# Local server absolute-path map (real host paths — do not commit)
+/CODE_manuscript_final/server_paths.local.env
+
+# Python bytecode (may embed absolute source paths)
+__pycache__/
+*.py[cod]

@@ -34,7 +34,31 @@
 
 set -euo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# Resolve openKoGES repo root without hard-coding host absolute paths.
+_find_repo_root() {
+  local d="$1"
+  local i
+  for i in $(seq 1 12); do
+    if [[ -d "$d/CODE_manuscript_final" && -d "$d/DATA_manuscript_final" ]]; then
+      printf '%s' "$d"
+      return 0
+    fi
+    local parent
+    parent="$(dirname "$d")"
+    [[ "$parent" == "$d" ]] && break
+    d="$parent"
+  done
+  echo "Could not locate openKoGES root; set OPENKOGES_ROOT." >&2
+  return 1
+}
+if [[ -z "${SCRIPT_DIR:-}" ]]; then
+  SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+fi
+REPO_ROOT="${OPENKOGES_ROOT:-$(_find_repo_root "$SCRIPT_DIR")}"
+REVISION_ROOT="${OPENKOGES_REVISION_ROOT:-$(dirname "$REPO_ROOT")/openKoGES_revision}"
+: "${PLINK2_BIN:?Set PLINK2_BIN}"
+: "${G1K_PHASE3_DIR:?Set G1K_PHASE3_DIR}"
+
 REF_ARG="${1:-both}"
 
 case "${REF_ARG}" in
@@ -60,13 +84,13 @@ fi
 # Shared settings
 # =============================================================================
 THREADS=30
-PLINK2=/bin2/plink2
-BASE_WD=/data4/sjim/openKoGES_revision/DATA_projectionPCA
+PLINK2="${PLINK2_BIN}"
+BASE_WD="${REVISION_ROOT}/DATA_projectionPCA"
 PCA_N=20
 
 # Companion scripts
 OADP_RSCRIPT="${SCRIPT_DIR}/oadp_projection.R"
-COMPARE_RSCRIPT="/home2/sjim/openKoGES/CODE_openkoges_additional/forPCA_projection/Figure_compare_oadp.R"
+COMPARE_RSCRIPT="${REPO_ROOT}/CODE_openkoges_additional/forPCA_projection/Figure_compare_oadp.R"
 
 # =============================================================================
 # Mode-specific settings
@@ -78,7 +102,7 @@ if [[ "${REF_ARG}" == "eas" ]]; then
   KOGES_BED_PREFIX="koges.projection.final"
   SOURCE_LABEL="1KG_EAS"
   OUT_PREFIX="pca_1kg_eas_reference"
-  G1K_PANEL=/data/1000G/Phase3_v5a/integrated_call_samples_v3.20130502.ALL.panel
+  G1K_PANEL="${G1K_PHASE3_DIR}/integrated_call_samples_v3.20130502.ALL.panel"
   EXPECTED_REF_N=504
   FIGURE_RSCRIPT="${SCRIPT_DIR}/Figure2A.R"
   LOG_NAME="oadp_projection_eas.log"
@@ -91,7 +115,7 @@ else  # all
   KOGES_BED_PREFIX="koges.projection.final"
   SOURCE_LABEL="1KG"
   OUT_PREFIX="pca_1kg_reference"
-  G1K_PANEL=/data/1000G/Phase3_v5a/integrated_call_samples_v3.20130502.ALL.panel
+  G1K_PANEL="${G1K_PHASE3_DIR}/integrated_call_samples_v3.20130502.ALL.panel"
   EXPECTED_REF_N=2504
   FIGURE_RSCRIPT="${SCRIPT_DIR}/SuppleFigure4.R"
   LOG_NAME="oadp_projection_all.log"

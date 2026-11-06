@@ -40,6 +40,47 @@ library(data.table)
 library(parallel)
 library(dplyr)
 
+
+# Resolve openKoGES repo root without hard-coding host absolute paths.
+.openkoges_repo_root <- function() {
+  env <- Sys.getenv("OPENKOGES_ROOT", unset = "")
+  if (nzchar(env)) return(normalizePath(env, winslash = "/", mustWork = FALSE))
+  args <- commandArgs(trailingOnly = FALSE)
+  fa <- sub("^--file=", "", args[startsWith(args, "--file=")])
+  start <- if (length(fa)) dirname(normalizePath(fa[[1]], winslash = "/", mustWork = FALSE)) else getwd()
+  d <- normalizePath(start, winslash = "/", mustWork = FALSE)
+  for (i in seq_len(12L)) {
+    if (dir.exists(file.path(d, "CODE_manuscript_final")) &&
+        dir.exists(file.path(d, "DATA_manuscript_final"))) {
+      return(d)
+    }
+    parent <- dirname(d)
+    if (identical(parent, d)) break
+    d <- parent
+  }
+  stop("Could not locate openKoGES root; set OPENKOGES_ROOT.", call. = FALSE)
+}
+REPO_ROOT <- .openkoges_repo_root()
+
+.require_env_dir <- function(name) {
+  val <- Sys.getenv(name, unset = "")
+  if (!nzchar(val)) {
+    stop(sprintf("Set environment variable %s (directory path).", name), call. = FALSE)
+  }
+  normalizePath(val, winslash = "/", mustWork = FALSE)
+}
+
+
+
+OPENGWAS_DIR <- .require_env_dir("OPENGWAS_DIR")
+ANNOVAR_DIR <- .require_env_dir("ANNOVAR_DIR")
+.require_env <- function(name) {
+  val <- Sys.getenv(name, unset = "")
+  if (!nzchar(val)) stop(sprintf("Set environment variable %s.", name), call. = FALSE)
+  val
+}
+PLINK_BIN <- .require_env("PLINK_BIN")
+
 parse_run_steps <- function() {
   raw <- trimws(Sys.getenv("RUN_STEPS", "all"))
   if (!nzchar(raw) || tolower(raw) == "all") {
@@ -55,14 +96,14 @@ step_enabled <- function(name, steps = parse_run_steps()) {
 # -----------------------------------------------------------------------------
 # Paths
 # -----------------------------------------------------------------------------
-saige_dir <- "/data6/OpenGWAS/KBA160K_longitudinal/Result/SAIGE_cumulative_incidence"
-saige_sefixed_dir <- "/data6/OpenGWAS/KBA160K_longitudinal/Result/GWAS_sumstat"
-frq_file <- "/data6/OpenGWAS/KBA160K/Genotype/KBAv1_KoGES_QCed_COMMON_Imputed_KRPphase2_RSupdated.frq"
-geno_file <- "/data6/OpenGWAS/KBA160K/Genotype/KBAv1_KoGES_QCed_COMMON_Imputed_KRPphase2_RSupdated"
-clump_dir <- "/data6/OpenGWAS/KBA160K_longitudinal/Result/Clumping"
-annot_file <- "/data6/OpenGWAS/KBA160K_longitudinal/Result/ANNOVAR/final_annotation_binary.tsv"
-result_dir <- "/home2/sjim/openKoGES/DATA_manuscript_final/Extended_Data"
-bim_anno_file <- "/home2/sjim/openKoGES/DATA_baseline/forGWAS_annot/bim_variantID_annot.rda"
+saige_dir <- file.path(OPENGWAS_DIR, "KBA160K_longitudinal", "Result", "SAIGE_cumulative_incidence")
+saige_sefixed_dir <- file.path(OPENGWAS_DIR, "KBA160K_longitudinal", "Result", "GWAS_sumstat")
+frq_file <- file.path(OPENGWAS_DIR, "KBA160K", "Genotype", "KBAv1_KoGES_QCed_COMMON_Imputed_KRPphase2_RSupdated.frq")
+geno_file <- file.path(OPENGWAS_DIR, "KBA160K", "Genotype", "KBAv1_KoGES_QCed_COMMON_Imputed_KRPphase2_RSupdated")
+clump_dir <- file.path(OPENGWAS_DIR, "KBA160K_longitudinal", "Result", "Clumping")
+annot_file <- file.path(OPENGWAS_DIR, "KBA160K_longitudinal", "Result", "ANNOVAR", "final_annotation_binary.tsv")
+result_dir <- file.path(REPO_ROOT, "DATA_manuscript_final", "Extended_Data")
+bim_anno_file <- file.path(REPO_ROOT, "DATA_baseline", "forGWAS_annot", "bim_variantID_annot.rda")
 
 # -----------------------------------------------------------------------------
 # Parallel settings
@@ -297,7 +338,7 @@ if (step_enabled("clump")) {
         "--out", out_prefix
       )
 
-      status <- system2("/bin2/plink", args = args)
+      status <- system2(PLINK_BIN, args = args)
       if (!identical(status, 0L)) {
         stop("PLINK clumping failed for ", p, " (exit status: ", status, ")")
       }
@@ -494,7 +535,7 @@ if (step_enabled("annovar")) {
 
       args <- c(
         avinput_file,
-        "/bin2/annovar/humandb/",
+        file.path(ANNOVAR_DIR, "humandb"),
         "-buildver", "hg19",
         "-out", out_prefix,
         "-protocol", "refGene",
@@ -504,7 +545,7 @@ if (step_enabled("annovar")) {
         "--thread", as.character(annovar_threads)
       )
 
-      status <- system2("/bin2/annovar/table_annovar.pl", args = args)
+      status <- system2(file.path(ANNOVAR_DIR, "table_annovar.pl"), args = args)
       if (!identical(status, 0L)) {
         stop("ANNOVAR failed for ", p, " (exit status: ", status, ")")
       }

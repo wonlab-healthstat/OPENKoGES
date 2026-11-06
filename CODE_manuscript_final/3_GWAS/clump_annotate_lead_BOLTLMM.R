@@ -37,6 +37,47 @@
 library(data.table)
 library(parallel)
 library(dplyr)
+
+# Resolve openKoGES repo root without hard-coding host absolute paths.
+.openkoges_repo_root <- function() {
+  env <- Sys.getenv("OPENKOGES_ROOT", unset = "")
+  if (nzchar(env)) return(normalizePath(env, winslash = "/", mustWork = FALSE))
+  args <- commandArgs(trailingOnly = FALSE)
+  fa <- sub("^--file=", "", args[startsWith(args, "--file=")])
+  start <- if (length(fa)) dirname(normalizePath(fa[[1]], winslash = "/", mustWork = FALSE)) else getwd()
+  d <- normalizePath(start, winslash = "/", mustWork = FALSE)
+  for (i in seq_len(12L)) {
+    if (dir.exists(file.path(d, "CODE_manuscript_final")) &&
+        dir.exists(file.path(d, "DATA_manuscript_final"))) {
+      return(d)
+    }
+    parent <- dirname(d)
+    if (identical(parent, d)) break
+    d <- parent
+  }
+  stop("Could not locate openKoGES root; set OPENKOGES_ROOT.", call. = FALSE)
+}
+REPO_ROOT <- .openkoges_repo_root()
+
+.require_env_dir <- function(name) {
+  val <- Sys.getenv(name, unset = "")
+  if (!nzchar(val)) {
+    stop(sprintf("Set environment variable %s (directory path).", name), call. = FALSE)
+  }
+  normalizePath(val, winslash = "/", mustWork = FALSE)
+}
+
+
+
+OPENGWAS_DIR <- .require_env_dir("OPENGWAS_DIR")
+ANNOVAR_DIR <- .require_env_dir("ANNOVAR_DIR")
+.require_env <- function(name) {
+  val <- Sys.getenv(name, unset = "")
+  if (!nzchar(val)) stop(sprintf("Set environment variable %s.", name), call. = FALSE)
+  val
+}
+PLINK_BIN <- .require_env("PLINK_BIN")
+
 pheno_map <- data.table(
   Pheno_code = c(
     "B_FEV1best_noNC_BOLT_result", "B_FFRbest_noNC_BOLT_result",  "B_FVCbest_noNC_BOLT_result", 
@@ -134,33 +175,30 @@ step_enabled <- function(name) {
 # -----------------------------------------------------------------------------
 # Paths
 # -----------------------------------------------------------------------------
-bolt_dir <- "/data6/OpenGWAS/KBA160K_longitudinal/Result/GWAS_sumstat"
+bolt_dir <- file.path(OPENGWAS_DIR, "KBA160K_longitudinal", "Result", "GWAS_sumstat")
 
 frq_file <- paste0(
-  "/data6/OpenGWAS/KBA160K/Genotype/",
+  file.path(OPENGWAS_DIR, "KBA160K", "Genotype"),
   "KBAv1_KoGES_QCed_COMMON_Imputed_KRPphase2_RSupdated.frq"
 )
 
 geno_file <- paste0(
-  "/data6/OpenGWAS/KBA160K/Genotype/",
+  file.path(OPENGWAS_DIR, "KBA160K", "Genotype"),
   "KBAv1_KoGES_QCed_COMMON_Imputed_KRPphase2_RSupdated"
 )
 
-clump_dir <- "/data6/OpenGWAS/KBA160K_longitudinal/Result/Clumping_BOLT"
+clump_dir <- file.path(OPENGWAS_DIR, "KBA160K_longitudinal", "Result", "Clumping_BOLT")
 annot_file <- paste0(
-  "/data6/OpenGWAS/KBA160K_longitudinal/Result/ANNOVAR/",
+  file.path(OPENGWAS_DIR, "KBA160K_longitudinal", "Result", "ANNOVAR"),
   "final_annotation_bolt.tsv"
 )
-result_dir <- "/home2/sjim/openKoGES/DATA_manuscript_final/Extended_Data"
+result_dir <- file.path(REPO_ROOT, "DATA_manuscript_final", "Extended_Data")
 
-bim_anno_file <- paste0(
-  "/home2/sjim/openKoGES/DATA_baseline/forGWAS_annot/",
-  "bim_variantID_annot.rda"
-)
+bim_anno_file <- file.path(REPO_ROOT, "DATA_baseline", "forGWAS_annot", "bim_variantID_annot.rda")
 
-plink_bin <- "/bin2/plink"
-annovar_bin <- "/bin2/annovar/table_annovar.pl"
-annovar_db <- "/bin2/annovar/humandb/"
+plink_bin <- PLINK_BIN
+annovar_bin <- file.path(ANNOVAR_DIR, "table_annovar.pl")
+annovar_db <- file.path(ANNOVAR_DIR, "humandb")
 
 # -----------------------------------------------------------------------------
 # Parallel settings

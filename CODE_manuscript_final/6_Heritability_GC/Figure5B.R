@@ -12,7 +12,7 @@
 # LDSC point estimates are read from the logs named by rg_prefix in the EAS
 # summary. The summary rg / rg_se columns are the section header produced by
 # stat() in 01_EAS_all_h2_rg_revision.R, not the numeric estimate.
-# No file under /data4/joh/openkoges/Heritability_GC is read.
+# No file under {OPENKOGES_AUX_DIR}/Heritability_GC is read.
 
 suppressPackageStartupMessages({
   library(data.table)
@@ -21,13 +21,51 @@ suppressPackageStartupMessages({
   library(patchwork)
 })
 
-RUN_ROOT <- "/data4/sjim/openKoGES_revision/Heritability_GC/recompute_260921"
+
+# Resolve openKoGES repo root without hard-coding host absolute paths.
+.openkoges_repo_root <- function() {
+  env <- Sys.getenv("OPENKOGES_ROOT", unset = "")
+  if (nzchar(env)) return(normalizePath(env, winslash = "/", mustWork = FALSE))
+  args <- commandArgs(trailingOnly = FALSE)
+  fa <- sub("^--file=", "", args[startsWith(args, "--file=")])
+  start <- if (length(fa)) dirname(normalizePath(fa[[1]], winslash = "/", mustWork = FALSE)) else getwd()
+  d <- normalizePath(start, winslash = "/", mustWork = FALSE)
+  for (i in seq_len(12L)) {
+    if (dir.exists(file.path(d, "CODE_manuscript_final")) &&
+        dir.exists(file.path(d, "DATA_manuscript_final"))) {
+      return(d)
+    }
+    parent <- dirname(d)
+    if (identical(parent, d)) break
+    d <- parent
+  }
+  stop("Could not locate openKoGES root; set OPENKOGES_ROOT.", call. = FALSE)
+}
+REPO_ROOT <- .openkoges_repo_root()
+
+.require_env_dir <- function(name) {
+  val <- Sys.getenv(name, unset = "")
+  if (!nzchar(val)) {
+    stop(sprintf("Set environment variable %s (directory path).", name), call. = FALSE)
+  }
+  normalizePath(val, winslash = "/", mustWork = FALSE)
+}
+
+
+OPENKOGES_AUX_DIR <- .require_env_dir("OPENKOGES_AUX_DIR")
+
+REVISION_ROOT <- Sys.getenv(
+  "OPENKOGES_REVISION_ROOT",
+  unset = file.path(dirname(REPO_ROOT), "openKoGES_revision")
+)
+
+RUN_ROOT <- file.path(REVISION_ROOT, "Heritability_GC", "recompute_260921")
 EAS_SUM <- file.path(RUN_ROOT, "EAS_LDSC", "EAS_h2_rg_summary.tsv")
 EUR_SUM <- file.path(RUN_ROOT, "EUR_POPCORN_pge_99", "KoGES_EUR_POPCORN_pge_summary_99.tsv")
 EAS_MAN <- file.path(RUN_ROOT, "manifest", "EAS_matching_manifest.tsv")
 EUR_MAN <- file.path(RUN_ROOT, "manifest", "EUR_matching_manifest.tsv")
 OUT_DIR <- file.path(RUN_ROOT, "plots_cross_ancestry_260927")
-FORBIDDEN <- "/data4/joh/openkoges/Heritability_GC"
+FORBIDDEN <- file.path(OPENKOGES_AUX_DIR, "Heritability_GC")
 
 EAS_COHORTS <- c("BBJ2021", "TWB", "TPMI")
 EUR_COHORTS <- c("UKB", "FinnGen", "MVP")
@@ -710,12 +748,12 @@ combined_files <- save_both(
   width = 16.4,
   height = combined_height
 )
-fig_root <- "/data4/joh/openkoges/figure_new0923"
+fig_root <- file.path(OPENKOGES_AUX_DIR, "figure_new0923")
 fig_out <- file.path(fig_root, "output")
 fig_panel <- file.path(fig_root, "panel")
 fig_ed <- file.path(fig_root, "extended_data", "cross_ancestry")
 dir.create(fig_out, recursive = TRUE, showWarnings = FALSE)
-dir.create(Sys.getenv("FIGURE5_OUT", unset = "/home2/sjim/openKoGES/RESULT_manuscript_final/Figure5"), recursive = TRUE, showWarnings = FALSE)
+dir.create(Sys.getenv("FIGURE5_OUT", unset = file.path(REPO_ROOT, "RESULT_manuscript_final", "Figure5")), recursive = TRUE, showWarnings = FALSE)
 dir.create(fig_panel, recursive = TRUE, showWarnings = FALSE)
 dir.create(fig_ed, recursive = TRUE, showWarnings = FALSE)
 pdf_only <- function(paths) paths[grepl("\\.pdf$", paths)]
@@ -723,7 +761,7 @@ copied <- c(
   file.copy(combined_files, fig_out, overwrite = TRUE),
   file.copy(
     combined_files[grepl("\\.png$", combined_files)],
-    file.path(Sys.getenv("FIGURE5_OUT", unset = "/home2/sjim/openKoGES/RESULT_manuscript_final/Figure5"), "Figure5B.png"),
+    file.path(Sys.getenv("FIGURE5_OUT", unset = file.path(REPO_ROOT, "RESULT_manuscript_final", "Figure5")), "Figure5B.png"),
     overwrite = TRUE
   ),
   file.copy(pdf_only(c(eas_files, eur_files)), fig_panel, overwrite = TRUE),

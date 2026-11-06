@@ -3,6 +3,19 @@ library(parallel)
 library(magick)
 library(grid)
 
+
+.require_env_dir <- function(name) {
+  val <- Sys.getenv(name, unset = "")
+  if (!nzchar(val)) {
+    stop(sprintf("Set environment variable %s (directory path).", name), call. = FALSE)
+  }
+  normalizePath(val, winslash = "/", mustWork = FALSE)
+}
+
+
+OPENGWAS_DIR <- .require_env_dir("OPENGWAS_DIR")
+OPENKOGES_AUX_DIR <- .require_env_dir("OPENKOGES_AUX_DIR")
+
 # ==============================================================================
 # KoGES 70K vs 160K disease Manhattan overlay plot
 # ==============================================================================
@@ -13,16 +26,16 @@ library(grid)
 
 # SE 보정 후 160K disease SAIGE summary statistics
 # 예: B_DM2_SAIGE_cumulative_inci.SAIGE.SEfixed.txt
-GWAS160K_DIR <- "/data6/OpenGWAS/KBA160K_longitudinal/Result/GWAS_sumstat"
+GWAS160K_DIR <- file.path(OPENGWAS_DIR, "KBA160K_longitudinal", "Result", "GWAS_sumstat")
 
 # 70K categorical GWAS summary statistics 경로
-GWAS70K_DIR <- "/data6/OpenGWAS/Sumstats/KBA70K/Cate"
+GWAS70K_DIR <- file.path(OPENGWAS_DIR, "Sumstats", "KBA70K", "Cate")
 
 # 새 longitudinal clumping 및 ANNOVAR 결과 경로
-CLUMP_ANNO_DIR <- "/data6/OpenGWAS/KBA160K_longitudinal/Result/Clumping"
+CLUMP_ANNO_DIR <- file.path(OPENGWAS_DIR, "KBA160K_longitudinal", "Result", "Clumping")
 
 # Figure 출력 경로
-OUT_DIR <- "/data4/joh/openkoges/figure/Overlaid_comparision_70Kvs160K/parallel_disease_260928_SEfixed"
+OUT_DIR <- file.path(OPENKOGES_AUX_DIR, "figure", "Overlaid_comparision_70Kvs160K", "parallel_disease_260928_SEfixed")
 
 dir.create(OUT_DIR, recursive = TRUE, showWarnings = FALSE)
 

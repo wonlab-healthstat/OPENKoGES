@@ -6,8 +6,8 @@
 # existing LDSC h2 logs produced by heritability.r.
 #
 # Inputs:
-#   /data4/joh/openkoges/table_new0923/intermediate/suppletable3/ldsc_260923/
-#   /data4/joh/openkoges/table_new0923/intermediate/suppletable3/ldsc_binary_260924/
+#   {OPENKOGES_AUX_DIR}/table_new0923/intermediate/suppletable3/ldsc_260923/
+#   {OPENKOGES_AUX_DIR}/table_new0923/intermediate/suppletable3/ldsc_binary_260924/
 #
 # Outputs:
 #   RESULT_manuscript_final/SuppleTable3/SuppleTable3A.csv  (continuous)
@@ -21,13 +21,48 @@ suppressPackageStartupMessages({
   library(data.table)
 })
 
+
+
+# Resolve openKoGES repo root without hard-coding host absolute paths.
+.openkoges_repo_root <- function() {
+  env <- Sys.getenv("OPENKOGES_ROOT", unset = "")
+  if (nzchar(env)) return(normalizePath(env, winslash = "/", mustWork = FALSE))
+  args <- commandArgs(trailingOnly = FALSE)
+  fa <- sub("^--file=", "", args[startsWith(args, "--file=")])
+  start <- if (length(fa)) dirname(normalizePath(fa[[1]], winslash = "/", mustWork = FALSE)) else getwd()
+  d <- normalizePath(start, winslash = "/", mustWork = FALSE)
+  for (i in seq_len(12L)) {
+    if (dir.exists(file.path(d, "CODE_manuscript_final")) &&
+        dir.exists(file.path(d, "DATA_manuscript_final"))) {
+      return(d)
+    }
+    parent <- dirname(d)
+    if (identical(parent, d)) break
+    d <- parent
+  }
+  stop("Could not locate openKoGES root; set OPENKOGES_ROOT.", call. = FALSE)
+}
+REPO_ROOT <- .openkoges_repo_root()
+
+.require_env_dir <- function(name) {
+  val <- Sys.getenv(name, unset = "")
+  if (!nzchar(val)) {
+    stop(sprintf("Set environment variable %s (directory path).", name), call. = FALSE)
+  }
+  normalizePath(val, winslash = "/", mustWork = FALSE)
+}
+
+
+
+OPENKOGES_AUX_DIR <- .require_env_dir("OPENKOGES_AUX_DIR")
+
 ###############################################################################
 # Paths
 ###############################################################################
 
-CONT <- "/data4/joh/openkoges/table_new0923/intermediate/suppletable3/ldsc_260923"
-BIN  <- "/data4/joh/openkoges/table_new0923/intermediate/suppletable3/ldsc_binary_260924"
-OUT_TABLE_DIR <- "/home2/sjim/openKoGES/RESULT_manuscript_final/SuppleTable3"
+CONT <- file.path(OPENKOGES_AUX_DIR, "table_new0923", "intermediate", "suppletable3", "ldsc_260923")
+BIN  <- file.path(OPENKOGES_AUX_DIR, "table_new0923", "intermediate", "suppletable3", "ldsc_binary_260924")
+OUT_TABLE_DIR <- file.path(REPO_ROOT, "RESULT_manuscript_final", "SuppleTable3")
 dir.create(OUT_TABLE_DIR, recursive = TRUE, showWarnings = FALSE)
 
 OUT_CONT_CSV <- file.path(OUT_TABLE_DIR, "SuppleTable3_cont.csv")

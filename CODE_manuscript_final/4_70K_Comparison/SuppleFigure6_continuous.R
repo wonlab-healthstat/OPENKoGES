@@ -2,11 +2,24 @@ library(data.table)
 library(parallel)
 library(magick)
 
+
+.require_env_dir <- function(name) {
+  val <- Sys.getenv(name, unset = "")
+  if (!nzchar(val)) {
+    stop(sprintf("Set environment variable %s (directory path).", name), call. = FALSE)
+  }
+  normalizePath(val, winslash = "/", mustWork = FALSE)
+}
+
+
+OPENGWAS_DIR <- .require_env_dir("OPENGWAS_DIR")
+OPENKOGES_AUX_DIR <- .require_env_dir("OPENKOGES_AUX_DIR")
+
 # ==============================================================================
 # KoGES 70K vs 160K Manhattan overlay plot
 #
 # 변경된 clumping / ANNOVAR 경로:
-# /data6/OpenGWAS/KBA160K_longitudinal/Result/Clumping_BOLT/
+# {OPENGWAS_DIR}/KBA160K_longitudinal/Result/Clumping_BOLT/
 #
 # 파일명 예:
 # RIN_B_ALBUMIN_bolt_clump_5e-8_0.1_1000.clumped
@@ -17,13 +30,13 @@ library(magick)
 # 0. 경로 설정
 # ------------------------------------------------------------------------------
 
-GWAS160K_DIR <- "/data6/OpenGWAS/KBA160K/Result/BOLT-LMM"
-GWAS70K_DIR  <- "/data6/OpenGWAS/Sumstats/KBA70K/Cont"
+GWAS160K_DIR <- file.path(OPENGWAS_DIR, "KBA160K", "Result", "BOLT-LMM")
+GWAS70K_DIR  <- file.path(OPENGWAS_DIR, "Sumstats", "KBA70K", "Cont")
 
 # 새로 생성한 longitudinal clumping + ANNOVAR 결과 폴더
-CLUMP_ANNO_DIR <- "/data6/OpenGWAS/KBA160K_longitudinal/Result/Clumping_BOLT"
+CLUMP_ANNO_DIR <- file.path(OPENGWAS_DIR, "KBA160K_longitudinal", "Result", "Clumping_BOLT")
 
-OUT_DIR <- "/data4/joh/openkoges/figure/Overlaid_comparision_70Kvs160K/parallel_260907"
+OUT_DIR <- file.path(OPENKOGES_AUX_DIR, "figure", "Overlaid_comparision_70Kvs160K", "parallel_260907")
 
 dir.create(OUT_DIR, recursive = TRUE, showWarnings = FALSE)
 

@@ -40,17 +40,39 @@ suppressPackageStartupMessages({
   library(openxlsx)
 })
 
+
+# Resolve openKoGES repo root without hard-coding host absolute paths.
+.openkoges_repo_root <- function() {
+  env <- Sys.getenv("OPENKOGES_ROOT", unset = "")
+  if (nzchar(env)) return(normalizePath(env, winslash = "/", mustWork = FALSE))
+  args <- commandArgs(trailingOnly = FALSE)
+  fa <- sub("^--file=", "", args[startsWith(args, "--file=")])
+  start <- if (length(fa)) dirname(normalizePath(fa[[1]], winslash = "/", mustWork = FALSE)) else getwd()
+  d <- normalizePath(start, winslash = "/", mustWork = FALSE)
+  for (i in seq_len(12L)) {
+    if (dir.exists(file.path(d, "CODE_manuscript_final")) &&
+        dir.exists(file.path(d, "DATA_manuscript_final"))) {
+      return(d)
+    }
+    parent <- dirname(d)
+    if (identical(parent, d)) break
+    d <- parent
+  }
+  stop("Could not locate openKoGES root; set OPENKOGES_ROOT.", call. = FALSE)
+}
+REPO_ROOT <- .openkoges_repo_root()
+
 # ------------------------------------------------------------------------------
 # 0. Paths + builders
 # ------------------------------------------------------------------------------
-catalog_tsv <- "/home2/sjim/openKoGES/DATA_manuscript_final/Extended_Data/Cont_lead_variants_GWAScatalog_novel.tsv"
-output_xlsx <- "/home2/sjim/openKoGES/DATA_manuscript_final/ExtendedData/ExtendedData2_continuous.xlsx"
+catalog_tsv <- file.path(REPO_ROOT, "DATA_manuscript_final", "Extended_Data", "Cont_lead_variants_GWAScatalog_novel.tsv")
+output_xlsx <- file.path(REPO_ROOT, "DATA_manuscript_final", "ExtendedData", "ExtendedData2_continuous.xlsx")
 
 ext_data_dir <- Sys.getenv("EXT_DATA_DIR", unset = "")
 if (!nzchar(ext_data_dir)) {
   ext_data_dir <- Sys.getenv(
     "EXTENDED_DATA_DIR",
-    "/home2/sjim/openKoGES/DATA_manuscript_final/Extended_Data"
+    file.path(REPO_ROOT, "DATA_manuscript_final", "Extended_Data")
   )
 }
 eas_panel_tsv <- Sys.getenv(
@@ -62,7 +84,7 @@ eur_panel_tsv <- Sys.getenv(
   file.path(ext_data_dir, "KoGES_BOLT_leads_EUR_panel_meta.tsv")
 )
 
-merge_dir <- "/home2/sjim/openKoGES/CODE_manuscript_final/4_Novelty_Replication/forEAS_EUR_merge"
+merge_dir <- file.path(REPO_ROOT, "CODE_manuscript_final", "4_Novelty_Replication", "forEAS_EUR_merge")
 code_root <- dirname(merge_dir)
 common_r <- file.path(merge_dir, "ExtendedData2_common.R")
 builders_r <- file.path(merge_dir, "ExtendedData2_builders_cont.R")

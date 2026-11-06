@@ -12,6 +12,22 @@ import sys
 from pathlib import Path
 from typing import Any
 
+
+def _openkoges_repo_root() -> Path:
+    import os
+    env = os.environ.get("OPENKOGES_ROOT", "").strip()
+    if env:
+        return Path(env).resolve()
+    start = Path(__file__).resolve().parent
+    for p in [start, *start.parents]:
+        if (p / "CODE_manuscript_final").is_dir() and (p / "DATA_manuscript_final").is_dir():
+            return p
+    raise RuntimeError("Could not locate openKoGES root; set OPENKOGES_ROOT.")
+
+
+REPO_ROOT = _openkoges_repo_root()
+
+
 if sys.version_info < (3, 8):
     sys.stderr.write(
         "novelty_figure requires Python 3.8+; got %s.%s. Use: python3 ...\n"
@@ -27,11 +43,11 @@ from matplotlib.ticker import FuncFormatter
 DEFAULT_INPUT_DIR = Path(
     os.environ.get(
         "MERGED_NOVELTY_DIR",
-        "/home2/sjim/openKoGES/DATA_manuscript_final/ExtendedData",
+        REPO_ROOT / "DATA_manuscript_final" / "ExtendedData",
     )
 )
 DEFAULT_OUTPUT_DIR = Path(
-    os.environ.get("OUTPUT_DIR", "/home2/sjim/openKoGES/RESULT_cumulative_inci")
+    os.environ.get("OUTPUT_DIR", REPO_ROOT / "RESULT_cumulative_inci")
 )
 
 SHEET_NAME = "Total_summary_Novelty_Repl"
@@ -344,7 +360,7 @@ def draw_figure(summary: pd.DataFrame, output_dir: Path, cfg: dict[str, Any]) ->
             for ax in (ax_group, ax_known, ax_phenotype, ax_novel):
                 ax.axhline(start - 0.5, color="#B9C4CF", linewidth=0.8, zorder=3)
 
-    # Optional display remapping (e.g. Cont Figure 4A: all novel -> "Novel 1 level").
+    # Optional display remapping (e.g. Cont Figure 4A: all novel -> "Novel").
     # Categories that share a display label are stacked/legended as one series.
     legend_label_map = cfg.get("legend_label_map") or {}
     plot_groups: list[tuple[str, str, list[str]]] = []
@@ -458,14 +474,8 @@ def draw_figure(summary: pd.DataFrame, output_dir: Path, cfg: dict[str, Any]) ->
     ax_known.invert_xaxis()
     ax_known.set_xticks(known_xticks)
     ax_known.set_xlabel(
-        "Number of lead variants (known + novel)",
+        "Number of loci (known + novel)",
         fontsize=layout["xlabel_fontsize"],
-    )
-    ax_known.set_title(
-        "Phenotype–lead association counts",
-        fontsize=layout["title_fontsize"],
-        fontweight="bold",
-        pad=layout["title_pad"],
     )
     ax_known.xaxis.grid(True, color="#E6E6E6", linewidth=0.7)
     ax_known.set_axisbelow(True)
@@ -475,14 +485,9 @@ def draw_figure(summary: pd.DataFrame, output_dir: Path, cfg: dict[str, Any]) ->
     ax_novel.set_xlim(0, layout["novel_xlim"])
     ax_novel.set_xticks([0, 25, 50, 75, 100])
     ax_novel.xaxis.set_major_formatter(FuncFormatter(lambda v, _: f"{v:g}%"))
-    novel_panel_label = "Proportion (%) (Novel/Total)"
-    ax_novel.set_xlabel(novel_panel_label, fontsize=layout["xlabel_fontsize"])
-    ax_novel.set_title(
-        novel_panel_label,
-        fontsize=layout["title_fontsize"],
-        fontweight="bold",
-        pad=layout["title_pad"],
-        color="#174A7E",
+    ax_novel.set_xlabel(
+        "Proportion (%) (Novel/Total)",
+        fontsize=layout["xlabel_fontsize"],
     )
     ax_novel.xaxis.grid(True, color="#E6E6E6", linewidth=0.7)
     ax_novel.set_axisbelow(True)
@@ -531,29 +536,15 @@ def draw_figure(summary: pd.DataFrame, output_dir: Path, cfg: dict[str, Any]) ->
             loc="upper center",
             ncol=2,
             frameon=False,
-            fontsize=10.5,
+            fontsize=15.75,  # 10.5 * 1.5
+            handlelength=3.0,
+            handleheight=1.5,
             bbox_to_anchor=(0.60, 0.985),
-        )
-        fig.suptitle(
-            "External novelty landscape of OpenKoGES lead associations",
-            x=layout["suptitle_x"],
-            y=layout["suptitle_y"],
-            ha=layout["suptitle_ha"],
-            fontsize=layout["suptitle_fontsize"],
-            fontweight="bold",
         )
         fig.subplots_adjust(**layout["subplots_adjust"])
     else:
         # Two rows of 4: known block, then novel block (avoids title/legend collision).
         fig.subplots_adjust(**layout["subplots_adjust"])
-        fig.suptitle(
-            "External novelty landscape of OpenKoGES lead associations",
-            x=layout["suptitle_x"],
-            y=layout["suptitle_y"],
-            ha=layout["suptitle_ha"],
-            fontsize=layout["suptitle_fontsize"],
-            fontweight="bold",
-        )
         if layout["subtitle"]:
             fig.text(
                 0.5,
@@ -569,7 +560,9 @@ def draw_figure(summary: pd.DataFrame, output_dir: Path, cfg: dict[str, Any]) ->
             loc="upper center",
             ncol=4,
             frameon=False,
-            fontsize=8.5,
+            fontsize=12.75,  # 8.5 * 1.5
+            handlelength=3.0,
+            handleheight=1.5,
             columnspacing=1.0,
             handletextpad=0.45,
             labelspacing=0.55,

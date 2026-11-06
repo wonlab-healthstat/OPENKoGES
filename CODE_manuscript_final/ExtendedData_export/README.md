@@ -7,7 +7,7 @@ Publication sheets are written to `RESULT_manuscript_final/ExtendedData/`
 ## Run
 
 ```bash
-python3 /home2/sjim/openKoGES/CODE_manuscript_final/ExtendedData_export/export_ExtendedData_publication.py
+python3 CODE_manuscript_final/ExtendedData_export/export_ExtendedData_publication.py
 ```
 
 ## Inputs → outputs

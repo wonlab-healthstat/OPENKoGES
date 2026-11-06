@@ -37,6 +37,32 @@
 #   Rscript SuppleFigure4.R
 #   Rscript SuppleFigure4.R all <coordinates.tsv>
 
+
+# Resolve openKoGES repo root without hard-coding host absolute paths.
+.openkoges_repo_root <- function() {
+  env <- Sys.getenv("OPENKOGES_ROOT", unset = "")
+  if (nzchar(env)) return(normalizePath(env, winslash = "/", mustWork = FALSE))
+  args <- commandArgs(trailingOnly = FALSE)
+  fa <- sub("^--file=", "", args[startsWith(args, "--file=")])
+  start <- if (length(fa)) dirname(normalizePath(fa[[1]], winslash = "/", mustWork = FALSE)) else getwd()
+  d <- normalizePath(start, winslash = "/", mustWork = FALSE)
+  for (i in seq_len(12L)) {
+    if (dir.exists(file.path(d, "CODE_manuscript_final")) &&
+        dir.exists(file.path(d, "DATA_manuscript_final"))) {
+      return(d)
+    }
+    parent <- dirname(d)
+    if (identical(parent, d)) break
+    d <- parent
+  }
+  stop("Could not locate openKoGES root; set OPENKOGES_ROOT.", call. = FALSE)
+}
+REPO_ROOT <- .openkoges_repo_root()
+REVISION_ROOT <- Sys.getenv(
+  "OPENKOGES_REVISION_ROOT",
+  unset = file.path(dirname(REPO_ROOT), "openKoGES_revision")
+)
+
 suppressMessages({
   library(data.table)
   library(ggplot2)
@@ -52,9 +78,9 @@ if (length(args) >= 1 && args[[1]] %in% c("kchip", "all")) {
 }
 
 if (mode == "kchip") {
-  default_coord <- "/data4/sjim/openKoGES_revision/DATA_projectionPCA/1kg_reference_projection_kchip/pca_1kg_reference.oadp.coordinates.tsv"
+  default_coord <- file.path(REVISION_ROOT, "DATA_projectionPCA", "1kg_reference_projection_kchip", "pca_1kg_reference.oadp.coordinates.tsv")
 } else {
-  default_coord <- "/data4/sjim/openKoGES_revision/DATA_projectionPCA/1kg_reference_projection_all/pca_1kg_reference.oadp.coordinates.tsv"
+  default_coord <- file.path(REVISION_ROOT, "DATA_projectionPCA", "1kg_reference_projection_all", "pca_1kg_reference.oadp.coordinates.tsv")
 }
 
 coord_file <- if (length(args) >= 1) {
@@ -63,7 +89,7 @@ coord_file <- if (length(args) >= 1) {
   default_coord
 }
 
-out_dir <- "/home2/sjim/openKoGES/RESULT_manuscript_final/SuppleFigure4"
+out_dir <- file.path(REPO_ROOT, "RESULT_manuscript_final", "SuppleFigure4")
 dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
 out_file <- file.path(out_dir, "SuppleFigure4.png")
 

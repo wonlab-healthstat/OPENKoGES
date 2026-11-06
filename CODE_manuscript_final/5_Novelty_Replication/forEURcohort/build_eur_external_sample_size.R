@@ -20,6 +20,28 @@
 #     eur_panel_meta_eligible=FALSE and a filled meta_exclusion_reason.
 ################################################################################
 
+
+# Resolve openKoGES repo root without hard-coding host absolute paths.
+.openkoges_repo_root <- function() {
+  env <- Sys.getenv("OPENKOGES_ROOT", unset = "")
+  if (nzchar(env)) return(normalizePath(env, winslash = "/", mustWork = FALSE))
+  args <- commandArgs(trailingOnly = FALSE)
+  fa <- sub("^--file=", "", args[startsWith(args, "--file=")])
+  start <- if (length(fa)) dirname(normalizePath(fa[[1]], winslash = "/", mustWork = FALSE)) else getwd()
+  d <- normalizePath(start, winslash = "/", mustWork = FALSE)
+  for (i in seq_len(12L)) {
+    if (dir.exists(file.path(d, "CODE_manuscript_final")) &&
+        dir.exists(file.path(d, "DATA_manuscript_final"))) {
+      return(d)
+    }
+    parent <- dirname(d)
+    if (identical(parent, d)) break
+    d <- parent
+  }
+  stop("Could not locate openKoGES root; set OPENKOGES_ROOT.", call. = FALSE)
+}
+REPO_ROOT <- .openkoges_repo_root()
+
 suppressPackageStartupMessages(library(data.table))
 
 script_dir <- tryCatch(
@@ -35,16 +57,16 @@ if (is.na(script_dir) || !nzchar(script_dir)) {
     script_dir <- getwd()
   }
 }
-source("/home2/sjim/openKoGES/CODE_GWASsumstatQC/eur_koges_trait_map.R")
+source(file.path(REPO_ROOT, "CODE_GWASsumstatQC", "eur_koges_trait_map.R"))
 
 meta_excel <- Sys.getenv("EUR_MATCHING_EXCEL", META_EXCEL_DEFAULT)
 out_n_path <- Sys.getenv(
   "EUR_EXTERNAL_N_PATH",
-  "/home2/sjim/openKoGES/DATA_manuscript_final/Extended_Data/eur_external_phenotype_N.tsv"
+  file.path(REPO_ROOT, "DATA_manuscript_final", "Extended_Data", "eur_external_phenotype_N.tsv")
 )
 out_elig_path <- Sys.getenv(
   "EUR_PANEL_ELIGIBILITY_PATH",
-  "/home2/sjim/openKoGES/DATA_manuscript_final/Extended_Data/eur_panel_phenotype_eligibility.tsv"
+  file.path(REPO_ROOT, "DATA_manuscript_final", "Extended_Data", "eur_panel_phenotype_eligibility.tsv")
 )
 
 meta <- read_eur_matching_meta(meta_excel, META_SHEET_DEFAULT)

@@ -48,10 +48,32 @@
 #     are never overwritten.
 # ==============================================================================
 
+
+# Resolve openKoGES repo root without hard-coding host absolute paths.
+.openkoges_repo_root <- function() {
+  env <- Sys.getenv("OPENKOGES_ROOT", unset = "")
+  if (nzchar(env)) return(normalizePath(env, winslash = "/", mustWork = FALSE))
+  args <- commandArgs(trailingOnly = FALSE)
+  fa <- sub("^--file=", "", args[startsWith(args, "--file=")])
+  start <- if (length(fa)) dirname(normalizePath(fa[[1]], winslash = "/", mustWork = FALSE)) else getwd()
+  d <- normalizePath(start, winslash = "/", mustWork = FALSE)
+  for (i in seq_len(12L)) {
+    if (dir.exists(file.path(d, "CODE_manuscript_final")) &&
+        dir.exists(file.path(d, "DATA_manuscript_final"))) {
+      return(d)
+    }
+    parent <- dirname(d)
+    if (identical(parent, d)) break
+    d <- parent
+  }
+  stop("Could not locate openKoGES root; set OPENKOGES_ROOT.", call. = FALSE)
+}
+REPO_ROOT <- .openkoges_repo_root()
+
 suppressPackageStartupMessages(library(data.table))
 
 DEFAULT_LIFTOVER <- "/data/bin/liftOver"
-DEFAULT_CHAIN <- "/home2/sjim/openKoGES/DATA_baseline/forGWAS_annot/hg19ToHg38.over.chain.gz"
+DEFAULT_CHAIN <- file.path(REPO_ROOT, "DATA_baseline", "forGWAS_annot", "hg19ToHg38.over.chain.gz")
 
 parse_args <- function(argv) {
   if (length(argv) < 2L) {

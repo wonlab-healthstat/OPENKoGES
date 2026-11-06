@@ -8,10 +8,10 @@
 # Traits with no finite rg (MI, KD, UB, UT) are dropped.
 #
 # Adapted from:
-#   /data4/joh/openkoges/figure_new0923/code/figure3/05_extended_gc.R
+#   {OPENKOGES_AUX_DIR}/figure_new0923/code/figure3/05_extended_gc.R
 #
 # Inputs:
-#   /data4/joh/openkoges/figure_new0923/intermediate/ldsc_rg_data5/*.log
+#   {OPENKOGES_AUX_DIR}/figure_new0923/intermediate/ldsc_rg_data5/*.log
 #   (from ldsc_rg.R)
 #
 # Outputs:
@@ -29,13 +29,48 @@ suppressPackageStartupMessages({
   library(patchwork)
 })
 
+
+
+# Resolve openKoGES repo root without hard-coding host absolute paths.
+.openkoges_repo_root <- function() {
+  env <- Sys.getenv("OPENKOGES_ROOT", unset = "")
+  if (nzchar(env)) return(normalizePath(env, winslash = "/", mustWork = FALSE))
+  args <- commandArgs(trailingOnly = FALSE)
+  fa <- sub("^--file=", "", args[startsWith(args, "--file=")])
+  start <- if (length(fa)) dirname(normalizePath(fa[[1]], winslash = "/", mustWork = FALSE)) else getwd()
+  d <- normalizePath(start, winslash = "/", mustWork = FALSE)
+  for (i in seq_len(12L)) {
+    if (dir.exists(file.path(d, "CODE_manuscript_final")) &&
+        dir.exists(file.path(d, "DATA_manuscript_final"))) {
+      return(d)
+    }
+    parent <- dirname(d)
+    if (identical(parent, d)) break
+    d <- parent
+  }
+  stop("Could not locate openKoGES root; set OPENKOGES_ROOT.", call. = FALSE)
+}
+REPO_ROOT <- .openkoges_repo_root()
+
+.require_env_dir <- function(name) {
+  val <- Sys.getenv(name, unset = "")
+  if (!nzchar(val)) {
+    stop(sprintf("Set environment variable %s (directory path).", name), call. = FALSE)
+  }
+  normalizePath(val, winslash = "/", mustWork = FALSE)
+}
+
+
+
+OPENKOGES_AUX_DIR <- .require_env_dir("OPENKOGES_AUX_DIR")
+
 ###############################################################################
 # Paths
 ###############################################################################
 
-LDSC_LOG_DIR <- "/data4/joh/openkoges/figure_new0923/intermediate/ldsc_rg_data5"
-DATA_DIR <- "/home2/sjim/openKoGES/DATA_manuscript_final/SuppleFigure5"
-OUT_PNG  <- "/home2/sjim/openKoGES/RESULT_manuscript_final/SuppleFigure5/SuppleFigure5C.png"
+LDSC_LOG_DIR <- file.path(OPENKOGES_AUX_DIR, "figure_new0923", "intermediate", "ldsc_rg_data5")
+DATA_DIR <- file.path(REPO_ROOT, "DATA_manuscript_final", "SuppleFigure5")
+OUT_PNG  <- file.path(REPO_ROOT, "RESULT_manuscript_final", "SuppleFigure5", "SuppleFigure5C.png")
 dir.create(DATA_DIR, recursive = TRUE, showWarnings = FALSE)
 dir.create(dirname(OUT_PNG), recursive = TRUE, showWarnings = FALSE)
 
@@ -181,8 +216,8 @@ parse_one_log <- function(f) {
   )
 }
 
-RG_TSV <- "/home2/sjim/openKoGES/DATA_manuscript_final/Figure3/ldsc_rg_results.tsv"
-RG_TSV_FALLBACK <- "/data4/joh/openkoges/figure_new0923/extended_data/figure3/ldsc_rg_results.tsv"
+RG_TSV <- file.path(REPO_ROOT, "DATA_manuscript_final", "Figure3", "ldsc_rg_results.tsv")
+RG_TSV_FALLBACK <- file.path(OPENKOGES_AUX_DIR, "figure_new0923", "extended_data", "figure3", "ldsc_rg_results.tsv")
 
 if (file.exists(RG_TSV)) {
   message("Loading pre-parsed rg table: ", RG_TSV)

@@ -36,6 +36,29 @@ suppressPackageStartupMessages({
   library(rsvg)
 })
 
+
+
+# Resolve openKoGES repo root without hard-coding host absolute paths.
+.openkoges_repo_root <- function() {
+  env <- Sys.getenv("OPENKOGES_ROOT", unset = "")
+  if (nzchar(env)) return(normalizePath(env, winslash = "/", mustWork = FALSE))
+  args <- commandArgs(trailingOnly = FALSE)
+  fa <- sub("^--file=", "", args[startsWith(args, "--file=")])
+  start <- if (length(fa)) dirname(normalizePath(fa[[1]], winslash = "/", mustWork = FALSE)) else getwd()
+  d <- normalizePath(start, winslash = "/", mustWork = FALSE)
+  for (i in seq_len(12L)) {
+    if (dir.exists(file.path(d, "CODE_manuscript_final")) &&
+        dir.exists(file.path(d, "DATA_manuscript_final"))) {
+      return(d)
+    }
+    parent <- dirname(d)
+    if (identical(parent, d)) break
+    d <- parent
+  }
+  stop("Could not locate openKoGES root; set OPENKOGES_ROOT.", call. = FALSE)
+}
+REPO_ROOT <- .openkoges_repo_root()
+
 if (requireNamespace("conflicted", quietly = TRUE)) {
   conflicted::conflict_prefer("filter", "dplyr", quiet = TRUE)
   conflicted::conflict_prefer("select", "dplyr", quiet = TRUE)
@@ -43,9 +66,9 @@ if (requireNamespace("conflicted", quietly = TRUE)) {
   conflicted::conflict_prefer("margin", "ggplot2", quiet = TRUE)
 }
 
-data_dir   <- "/home2/sjim/openKoGES/DATA_manuscript_final/Figure1"
+data_dir   <- file.path(REPO_ROOT, "DATA_manuscript_final", "Figure1")
 raw_dir    <- file.path(data_dir, "raw")
-output_dir <- "/home2/sjim/openKoGES/RESULT_manuscript_final/Figure1"
+output_dir <- file.path(REPO_ROOT, "RESULT_manuscript_final", "Figure1")
 dir.create(output_dir, recursive = TRUE, showWarnings = FALSE)
 
 sido_count_path <- file.path(data_dir, "sido_sample_counts.csv")

@@ -28,6 +28,18 @@ suppressPackageStartupMessages({
   library(parallel)
 })
 
+
+.require_env_dir <- function(name) {
+  val <- Sys.getenv(name, unset = "")
+  if (!nzchar(val)) {
+    stop(sprintf("Set environment variable %s (directory path).", name), call. = FALSE)
+  }
+  normalizePath(val, winslash = "/", mustWork = FALSE)
+}
+
+
+OPENGWAS_DIR <- .require_env_dir("OPENGWAS_DIR")
+
 ###############################################################################
 # Settings
 ###############################################################################
@@ -51,7 +63,7 @@ if (is.na(n_cores) || n_cores < 1L) {
   n_cores <- max(1L, parallel::detectCores() - 1L)
 }
 
-SUMSTAT_DIR <- "/data6/OpenGWAS/KBA160K_longitudinal/Result/GWAS_sumstat"
+SUMSTAT_DIR <- file.path(OPENGWAS_DIR, "KBA160K_longitudinal", "Result", "GWAS_sumstat")
 
 ###############################################################################
 # Phenotype display labels (same manuscript set as clump scripts)

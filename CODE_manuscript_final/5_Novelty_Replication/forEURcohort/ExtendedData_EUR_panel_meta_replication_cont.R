@@ -61,12 +61,34 @@
 #   Nominal: direction-concordant AND P_meta <= 0.05
 #   Bonferroni: direction-concordant AND P_meta <= alpha
 ################################################################################
+
+# Resolve openKoGES repo root without hard-coding host absolute paths.
+.openkoges_repo_root <- function() {
+  env <- Sys.getenv("OPENKOGES_ROOT", unset = "")
+  if (nzchar(env)) return(normalizePath(env, winslash = "/", mustWork = FALSE))
+  args <- commandArgs(trailingOnly = FALSE)
+  fa <- sub("^--file=", "", args[startsWith(args, "--file=")])
+  start <- if (length(fa)) dirname(normalizePath(fa[[1]], winslash = "/", mustWork = FALSE)) else getwd()
+  d <- normalizePath(start, winslash = "/", mustWork = FALSE)
+  for (i in seq_len(12L)) {
+    if (dir.exists(file.path(d, "CODE_manuscript_final")) &&
+        dir.exists(file.path(d, "DATA_manuscript_final"))) {
+      return(d)
+    }
+    parent <- dirname(d)
+    if (identical(parent, d)) break
+    d <- parent
+  }
+  stop("Could not locate openKoGES root; set OPENKOGES_ROOT.", call. = FALSE)
+}
+REPO_ROOT <- .openkoges_repo_root()
+
 suppressPackageStartupMessages(library(data.table))
 
 # ------------------------------------------------------------------------------
 # 0. Paths / options
 # ------------------------------------------------------------------------------
-ext_data <- "/home2/sjim/openKoGES/DATA_manuscript_final/Extended_Data"
+ext_data <- file.path(REPO_ROOT, "DATA_manuscript_final", "Extended_Data")
 ukb_path <- Sys.getenv(
   "UKB_NOVELTY_PATH",
   file.path(ext_data, "KoGES_BOLT_leads_UKB_novelty_replication_cont.tsv")
@@ -81,15 +103,15 @@ mvp_path <- Sys.getenv(
 )
 n_path <- Sys.getenv(
   "EUR_EXTERNAL_N_PATH",
-  "/home2/sjim/openKoGES/DATA_manuscript_final/Extended_Data/eur_external_phenotype_N.tsv"
+  file.path(REPO_ROOT, "DATA_manuscript_final", "Extended_Data", "eur_external_phenotype_N.tsv")
 )
 elig_path <- Sys.getenv(
   "EUR_PANEL_ELIGIBILITY_PATH",
-  "/home2/sjim/openKoGES/DATA_manuscript_final/Extended_Data/eur_panel_phenotype_eligibility.tsv"
+  file.path(REPO_ROOT, "DATA_manuscript_final", "Extended_Data", "eur_panel_phenotype_eligibility.tsv")
 )
 out_dir <- Sys.getenv(
   "OUTPUT_DIR",
-  "/home2/sjim/openKoGES/DATA_manuscript_final/Extended_Data"
+  file.path(REPO_ROOT, "DATA_manuscript_final", "Extended_Data")
 )
 out_path <- file.path(out_dir, "KoGES_BOLT_leads_EUR_panel_meta.tsv")
 alpha_global <- 0.05
@@ -284,7 +306,7 @@ Sys.setenv(
   EUR_PANEL_ELIGIBILITY_PATH = elig_path
 )
 source(
-  "/home2/sjim/openKoGES/CODE_manuscript_final/4_Novelty_Replication/forEURcohort/build_eur_external_sample_size.R",
+  file.path(REPO_ROOT, "CODE_manuscript_final", "4_Novelty_Replication", "forEURcohort", "build_eur_external_sample_size.R"),
   local = TRUE
 )
 n_table_present <- file.exists(n_path)

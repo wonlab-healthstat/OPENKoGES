@@ -17,16 +17,30 @@
 library(data.table)
 library(parallel)
 
+
+.require_env_dir <- function(name) {
+  val <- Sys.getenv(name, unset = "")
+  if (!nzchar(val)) {
+    stop(sprintf("Set environment variable %s (directory path).", name), call. = FALSE)
+  }
+  normalizePath(val, winslash = "/", mustWork = FALSE)
+}
+
+
+OPENGWAS_DIR <- .require_env_dir("OPENGWAS_DIR")
+BOLT_PRUNE_DIR <- .require_env_dir("BOLT_PRUNE_DIR")
+BOLT_LMM_DIR <- .require_env_dir("BOLT_LMM_DIR")
+
 # -----------------------------------------------------------------------------
 # Default paths (KoGES)
 # -----------------------------------------------------------------------------
-pheno_file <- "/data6/OpenGWAS/KBA160K/Phenotype/KBA_pheno_clin_RIN_152719_LDLclean_Ca.txt"
-covar_file <- "/data6/OpenGWAS/KBA160K/Phenotype/KBA_pheno_covar_152719.txt"
-bfile <- "/data6/OpenGWAS/KBA160K/Genotype/KBAv1_KoGES_QCed_COMMON_Imputed_KRPphase2_RSupdated"
-model_snps <- "/data6/FROM_MR/eksong/OpenKoGES/BOLT-LMM/pruning/KBA160K_pruning_0.01_50_5_0.1.prune.in"
-genetic_map <- "/home2/ymji/4.Tools/BOLT-LMM_v2.4/tables/genetic_map_hg19_withX.txt.gz"
-ldscores <- "/home2/ymji/4.Tools/BOLT-LMM_v2.4/tables/LDSCORE.1000G_EAS.tab.gz"
-out.dir <- "/data6/OpenGWAS/KBA160K/Result/BOLT-LMM"
+pheno_file <- file.path(OPENGWAS_DIR, "KBA160K", "Phenotype", "KBA_pheno_clin_RIN_152719_LDLclean_Ca.txt")
+covar_file <- file.path(OPENGWAS_DIR, "KBA160K", "Phenotype", "KBA_pheno_covar_152719.txt")
+bfile <- file.path(OPENGWAS_DIR, "KBA160K", "Genotype", "KBAv1_KoGES_QCed_COMMON_Imputed_KRPphase2_RSupdated")
+model_snps <- file.path(BOLT_PRUNE_DIR, "KBA160K_pruning_0.01_50_5_0.1.prune.in")
+genetic_map <- file.path(BOLT_LMM_DIR, "tables", "genetic_map_hg19_withX.txt.gz")
+ldscores <- file.path(BOLT_LMM_DIR, "tables", "LDSCORE.1000G_EAS.tab.gz")
+out.dir <- file.path(OPENGWAS_DIR, "KBA160K", "Result", "BOLT-LMM")
 
 # Default covariates (categorical + quantitative)
 covar_cols  <- c("B_SEX_BINARY")

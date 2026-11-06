@@ -27,6 +27,32 @@
 # ==============================================================================
 set -euo pipefail
 
+# Resolve openKoGES repo root without hard-coding host absolute paths.
+_find_repo_root() {
+  local d="$1"
+  local i
+  for i in $(seq 1 12); do
+    if [[ -d "$d/CODE_manuscript_final" && -d "$d/DATA_manuscript_final" ]]; then
+      printf '%s' "$d"
+      return 0
+    fi
+    local parent
+    parent="$(dirname "$d")"
+    [[ "$parent" == "$d" ]] && break
+    d="$parent"
+  done
+  echo "Could not locate openKoGES root; set OPENKOGES_ROOT." >&2
+  return 1
+}
+if [[ -z "${SCRIPT_DIR:-}" ]]; then
+  SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+fi
+REPO_ROOT="${OPENKOGES_ROOT:-$(_find_repo_root "$SCRIPT_DIR")}"
+REVISION_ROOT="${OPENKOGES_REVISION_ROOT:-$(dirname "$REPO_ROOT")/openKoGES_revision}"
+
+: "${OPENGWAS_DIR:?Set OPENGWAS_DIR to the OpenGWAS data root}"
+
+
 HERE="$(cd "$(dirname "$0")" && pwd)"
 SHARED="$(cd "$HERE/../shared" && pwd)"
 cd "$HERE"
@@ -40,7 +66,7 @@ case "$EAS_RUN_MODE" in
 esac
 export EAS_RUN_MODE
 
-BASE="${BASE_DIR:-/data4/sjim/openKoGES_revision/DATA_cumulative_inci/forBOLT-LMM/BOLT_lead_variant}"
+BASE="${BASE_DIR:-${REVISION_ROOT}/DATA_cumulative_inci/forBOLT-LMM/BOLT_lead_variant}"
 S1="${PRELD_DIR:-$BASE/COJO/EAS-only/step1}"
 S2="${STEP2_DIR:-$BASE/COJO/EAS-only/ancestry_clumped_1000G_V5_${SUFFIX}}"
 MA="${MA_DIR:-$BASE/COJO/EAS-only/GCTA_ma_V5_${SUFFIX}}"
@@ -48,7 +74,7 @@ G="${GCTA_OUT_DIR:-$BASE/COJO/EAS-only/GCTA_conditional_V5_${SUFFIX}}"
 LOG="${LOG_DIR:-$BASE/COJO/EAS-only/logs_V5_${SUFFIX}}"
 REF="${COJO_LD_REFERENCE:-$BASE/COJO/EAS-only/KoGES_COJO_LD_reference_V5_${SUFFIX}}"
 REF_1000G_DIR="${REF_1000G_DIR:-$BASE/COJO/1000G_LD_panel_indel}"
-FULL_BFILE="${KOGES_BFILE_FULL:-/data6/OpenGWAS/KBA160K/Genotype/KBAv1_KoGES_QCed_COMMON_Imputed_KRPphase2_RSupdated}"
+FULL_BFILE="${KOGES_BFILE_FULL:-${OPENGWAS_DIR}/KBA160K/Genotype/KBAv1_KoGES_QCed_COMMON_Imputed_KRPphase2_RSupdated}"
 
 # Sized for a dedicated ~40-core / ~500G-free node per mode.
 # Two nodes (primary vs sensitivity) should each export these values; they

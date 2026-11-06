@@ -26,16 +26,39 @@
 #   RESULT_manuscript_final/Figure2/Figure2B_kinship_hist.png
 #   (frequency summary is printed to the console / log)
 
+
+
+# Resolve openKoGES repo root without hard-coding host absolute paths.
+.openkoges_repo_root <- function() {
+  env <- Sys.getenv("OPENKOGES_ROOT", unset = "")
+  if (nzchar(env)) return(normalizePath(env, winslash = "/", mustWork = FALSE))
+  args <- commandArgs(trailingOnly = FALSE)
+  fa <- sub("^--file=", "", args[startsWith(args, "--file=")])
+  start <- if (length(fa)) dirname(normalizePath(fa[[1]], winslash = "/", mustWork = FALSE)) else getwd()
+  d <- normalizePath(start, winslash = "/", mustWork = FALSE)
+  for (i in seq_len(12L)) {
+    if (dir.exists(file.path(d, "CODE_manuscript_final")) &&
+        dir.exists(file.path(d, "DATA_manuscript_final"))) {
+      return(d)
+    }
+    parent <- dirname(d)
+    if (identical(parent, d)) break
+    d <- parent
+  }
+  stop("Could not locate openKoGES root; set OPENKOGES_ROOT.", call. = FALSE)
+}
+REPO_ROOT <- .openkoges_repo_root()
+
 suppressMessages({
   library(data.table)
   library(ggplot2)
   library(scales)
 })
 
-raw_dir   <- "/home2/sjim/openKoGES/DATA_manuscript_final/Figure2/raw"
+raw_dir   <- file.path(REPO_ROOT, "DATA_manuscript_final", "Figure2", "raw")
 kin0_path <- file.path(raw_dir, "KBAv1_KoGES_QCed_COMMON_Imputed_KRPphase2_Filtered_HWE1e6_R0.8_pr0.2_king.kin0")
-data_dir  <- "/home2/sjim/openKoGES/DATA_manuscript_final/Figure2B"
-out_dir   <- "/home2/sjim/openKoGES/RESULT_manuscript_final/Figure2"
+data_dir  <- file.path(REPO_ROOT, "DATA_manuscript_final", "Figure2B")
+out_dir   <- file.path(REPO_ROOT, "RESULT_manuscript_final", "Figure2")
 dir.create(raw_dir, recursive = TRUE, showWarnings = FALSE)
 dir.create(data_dir, recursive = TRUE, showWarnings = FALSE)
 dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)

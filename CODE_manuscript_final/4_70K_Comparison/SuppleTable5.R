@@ -36,6 +36,40 @@
 #   Rscript SuppleTable5.R
 # ============================================================
 
+
+# Resolve openKoGES repo root without hard-coding host absolute paths.
+.openkoges_repo_root <- function() {
+  env <- Sys.getenv("OPENKOGES_ROOT", unset = "")
+  if (nzchar(env)) return(normalizePath(env, winslash = "/", mustWork = FALSE))
+  args <- commandArgs(trailingOnly = FALSE)
+  fa <- sub("^--file=", "", args[startsWith(args, "--file=")])
+  start <- if (length(fa)) dirname(normalizePath(fa[[1]], winslash = "/", mustWork = FALSE)) else getwd()
+  d <- normalizePath(start, winslash = "/", mustWork = FALSE)
+  for (i in seq_len(12L)) {
+    if (dir.exists(file.path(d, "CODE_manuscript_final")) &&
+        dir.exists(file.path(d, "DATA_manuscript_final"))) {
+      return(d)
+    }
+    parent <- dirname(d)
+    if (identical(parent, d)) break
+    d <- parent
+  }
+  stop("Could not locate openKoGES root; set OPENKOGES_ROOT.", call. = FALSE)
+}
+REPO_ROOT <- .openkoges_repo_root()
+
+.require_env_dir <- function(name) {
+  val <- Sys.getenv(name, unset = "")
+  if (!nzchar(val)) {
+    stop(sprintf("Set environment variable %s (directory path).", name), call. = FALSE)
+  }
+  normalizePath(val, winslash = "/", mustWork = FALSE)
+}
+
+
+
+OPENGWAS_DIR <- .require_env_dir("OPENGWAS_DIR")
+
 suppressPackageStartupMessages(library(data.table))
 
 WINDOW_BP <- 1e6L
@@ -46,26 +80,26 @@ WINDOW_BP <- 1e6L
 
 ROOT <- Sys.getenv(
   "SUPPLETABLE5_ROOT",
-  unset = "/data6/OpenGWAS/Sumstats/KBA70K_rsid_fixed/locus_compare"
+  unset = file.path(OPENGWAS_DIR, "Sumstats", "KBA70K_rsid_fixed", "locus_compare")
 )
 CLUMP_70K <- file.path(ROOT, "clump")
 GWS_70K <- file.path(ROOT, "gws")
 GWS_160K <- file.path(ROOT, "sig160")
 CLUMP_160K_CONT <- Sys.getenv(
   "SUPPLETABLE5_CLUMP_160K_CONT",
-  unset = "/data6/OpenGWAS/KBA160K_longitudinal/Result/Clumping_BOLT"
+  unset = file.path(OPENGWAS_DIR, "KBA160K_longitudinal", "Result", "Clumping_BOLT")
 )
 CLUMP_160K_BIN <- Sys.getenv(
   "SUPPLETABLE5_CLUMP_160K_BIN",
-  unset = "/data6/OpenGWAS/KBA160K_longitudinal/Result/Clumping"
+  unset = file.path(OPENGWAS_DIR, "KBA160K_longitudinal", "Result", "Clumping")
 )
 OUT_DIR <- Sys.getenv(
   "SUPPLETABLE5_OUT",
-  unset = "/home2/sjim/openKoGES/RESULT_manuscript_final/SuppleTable5"
+  unset = file.path(REPO_ROOT, "RESULT_manuscript_final", "SuppleTable5")
 )
 SUMSTAT_160K_DIR <- Sys.getenv(
   "SUPPLETABLE5_SUMSTAT_160K",
-  unset = "/data6/OpenGWAS/KBA160K_longitudinal/Result/GWAS_sumstat"
+  unset = file.path(OPENGWAS_DIR, "KBA160K_longitudinal", "Result", "GWAS_sumstat")
 )
 dir.create(OUT_DIR, recursive = TRUE, showWarnings = FALSE)
 

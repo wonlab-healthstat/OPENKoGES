@@ -16,7 +16,7 @@
 #   LDSC executable and East Asian LD-score reference
 #
 # Outputs (existing pairwise LDSC logs; cont and bin share this dir):
-#   /data4/joh/openkoges/figure_new0923/intermediate/ldsc_rg_data5/*.log
+#   {OPENKOGES_AUX_DIR}/figure_new0923/intermediate/ldsc_rg_data5/*.log
 #
 # Usage:
 #   Rscript ldsc_rg.R
@@ -26,15 +26,29 @@ suppressPackageStartupMessages({
   library(parallel)
 })
 
+
+.require_env_dir <- function(name) {
+  val <- Sys.getenv(name, unset = "")
+  if (!nzchar(val)) {
+    stop(sprintf("Set environment variable %s (directory path).", name), call. = FALSE)
+  }
+  normalizePath(val, winslash = "/", mustWork = FALSE)
+}
+
+
+OPENKOGES_AUX_DIR <- .require_env_dir("OPENKOGES_AUX_DIR")
+LDSC_DIR <- .require_env_dir("LDSC_DIR")
+OPENKOGES_WORK_DIR <- .require_env_dir("OPENKOGES_WORK_DIR")
+
 # ------------------------------------------------------------
 # paths
 # ------------------------------------------------------------
-LDSC  <- "/home2/eksong/OpenKoGES/LDSC/tools/ldsc.py"
-REF   <- "/home2/eksong/OpenKoGES/LDSC/tools/eas_ldscores/"
-BOLT  <- "/data5/joh/openkoges/Heritability/munge/KoGES/BOLT_LMM"
-SAIGE <- "/data5/joh/openkoges/Heritability/munge/KoGES/SAIGE_binary"
+LDSC  <- file.path(LDSC_DIR, "ldsc.py")
+REF   <- file.path(LDSC_DIR, "eas_ldscores")
+BOLT  <- file.path(OPENKOGES_WORK_DIR, "Heritability", "munge", "KoGES", "BOLT_LMM")
+SAIGE <- file.path(OPENKOGES_WORK_DIR, "Heritability", "munge", "KoGES", "SAIGE_binary")
 
-OUT_RG <- "/data4/joh/openkoges/figure_new0923/intermediate/ldsc_rg_data5"
+OUT_RG <- file.path(OPENKOGES_AUX_DIR, "figure_new0923", "intermediate", "ldsc_rg_data5")
 dir.create(OUT_RG, recursive = TRUE, showWarnings = FALSE)
 OUT_RG_CONT <- OUT_RG
 OUT_RG_BIN  <- OUT_RG

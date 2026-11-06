@@ -39,9 +39,13 @@ from matplotlib.ticker import FixedFormatter, FixedLocator
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 REPO_ROOT = SCRIPT_DIR.parents[2]
+import os
+OPENKOGES_WORK_DIR = Path(os.environ["OPENKOGES_WORK_DIR"])
 DEFAULT_XLSX = REPO_ROOT / "DATA_manuscript_final" / "ExtendedData" / "ExtendedData2_categorical.xlsx"
-DEFAULT_CACHE = Path(
-    "/data5/joh/openkoges/MAFplot_gnomAD_EAS_EUR/KoGES_gnomAD_EAS_EUR_allele_matching_QC_cate.tsv"
+DEFAULT_CACHE = (
+    OPENKOGES_WORK_DIR
+    / "MAFplot_gnomAD_EAS_EUR"
+    / "KoGES_gnomAD_EAS_EUR_allele_matching_QC_cate.tsv"
 )
 DEFAULT_PNG = REPO_ROOT / "RESULT_manuscript_final" / "SuppleFigure8" / "SuppleFigure8B.png"
 SHEET = "Total_summary_Novelty_Repl"

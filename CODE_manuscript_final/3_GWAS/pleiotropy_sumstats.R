@@ -7,7 +7,7 @@
 #   (P < 5e-6), so the locus plot can show cross-trait overlap.
 #
 # Adapted from:
-#   /data4/joh/openkoges/figure_new0923/code/figure3/01_extract_pleiotropy_sumstats.R
+#   {OPENKOGES_AUX_DIR}/figure_new0923/code/figure3/01_extract_pleiotropy_sumstats.R
 #
 # Inputs:
 #   Clumping_BOLT / Clumping  (.clumped, tag 5e-8_0.1_1000)
@@ -31,17 +31,52 @@ suppressPackageStartupMessages({
   library(data.table)
 })
 
+
+# Resolve openKoGES repo root without hard-coding host absolute paths.
+.openkoges_repo_root <- function() {
+  env <- Sys.getenv("OPENKOGES_ROOT", unset = "")
+  if (nzchar(env)) return(normalizePath(env, winslash = "/", mustWork = FALSE))
+  args <- commandArgs(trailingOnly = FALSE)
+  fa <- sub("^--file=", "", args[startsWith(args, "--file=")])
+  start <- if (length(fa)) dirname(normalizePath(fa[[1]], winslash = "/", mustWork = FALSE)) else getwd()
+  d <- normalizePath(start, winslash = "/", mustWork = FALSE)
+  for (i in seq_len(12L)) {
+    if (dir.exists(file.path(d, "CODE_manuscript_final")) &&
+        dir.exists(file.path(d, "DATA_manuscript_final"))) {
+      return(d)
+    }
+    parent <- dirname(d)
+    if (identical(parent, d)) break
+    d <- parent
+  }
+  stop("Could not locate openKoGES root; set OPENKOGES_ROOT.", call. = FALSE)
+}
+REPO_ROOT <- .openkoges_repo_root()
+
+.require_env_dir <- function(name) {
+  val <- Sys.getenv(name, unset = "")
+  if (!nzchar(val)) {
+    stop(sprintf("Set environment variable %s (directory path).", name), call. = FALSE)
+  }
+  normalizePath(val, winslash = "/", mustWork = FALSE)
+}
+
+
+
+OPENGWAS_DIR <- .require_env_dir("OPENGWAS_DIR")
+OPENKOGES_AUX_DIR <- .require_env_dir("OPENKOGES_AUX_DIR")
+
 # ------------------------------------------------------------
 # paths
 # ------------------------------------------------------------
-INT_DIR_CONT <- "/home2/sjim/openKoGES/DATA_manuscript_final/Figure3"
-INT_DIR_BIN  <- "/home2/sjim/openKoGES/DATA_manuscript_final/SuppleFigure5"
+INT_DIR_CONT <- file.path(REPO_ROOT, "DATA_manuscript_final", "Figure3")
+INT_DIR_BIN  <- file.path(REPO_ROOT, "DATA_manuscript_final", "SuppleFigure5")
 dir.create(INT_DIR_CONT, recursive = TRUE, showWarnings = FALSE)
 dir.create(INT_DIR_BIN,  recursive = TRUE, showWarnings = FALSE)
 
-CLUMP_DIR_CONT  <- "/data6/OpenGWAS/KBA160K_longitudinal/Result/Clumping_BOLT"
-CLUMP_DIR_BIN   <- "/data6/OpenGWAS/KBA160K_longitudinal/Result/Clumping"
-SUMSTAT_DIR     <- "/data6/OpenGWAS/KBA160K_longitudinal/Result/GWAS_sumstat"
+CLUMP_DIR_CONT  <- file.path(OPENGWAS_DIR, "KBA160K_longitudinal", "Result", "Clumping_BOLT")
+CLUMP_DIR_BIN   <- file.path(OPENGWAS_DIR, "KBA160K_longitudinal", "Result", "Clumping")
+SUMSTAT_DIR     <- file.path(OPENGWAS_DIR, "KBA160K_longitudinal", "Result", "GWAS_sumstat")
 
 P_THR_PLOT <- 5e-6
 CLUMP_TAG  <- "5e-8_0.1_1000"

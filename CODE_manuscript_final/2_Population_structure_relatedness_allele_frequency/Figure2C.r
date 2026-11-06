@@ -15,6 +15,29 @@
 # Outputs:
 #   RESULT_manuscript_final/Figure2/Figure2C.png
 
+
+
+# Resolve openKoGES repo root without hard-coding host absolute paths.
+.openkoges_repo_root <- function() {
+  env <- Sys.getenv("OPENKOGES_ROOT", unset = "")
+  if (nzchar(env)) return(normalizePath(env, winslash = "/", mustWork = FALSE))
+  args <- commandArgs(trailingOnly = FALSE)
+  fa <- sub("^--file=", "", args[startsWith(args, "--file=")])
+  start <- if (length(fa)) dirname(normalizePath(fa[[1]], winslash = "/", mustWork = FALSE)) else getwd()
+  d <- normalizePath(start, winslash = "/", mustWork = FALSE)
+  for (i in seq_len(12L)) {
+    if (dir.exists(file.path(d, "CODE_manuscript_final")) &&
+        dir.exists(file.path(d, "DATA_manuscript_final"))) {
+      return(d)
+    }
+    parent <- dirname(d)
+    if (identical(parent, d)) break
+    d <- parent
+  }
+  stop("Could not locate openKoGES root; set OPENKOGES_ROOT.", call. = FALSE)
+}
+REPO_ROOT <- .openkoges_repo_root()
+
 suppressMessages({
   library(data.table)
   library(ggplot2)
@@ -23,8 +46,8 @@ suppressMessages({
   library(cowplot)
 })
 
-pref <- "/home2/sjim/openKoGES/DATA_manuscript_final/Figure2/KoGES_autosome_MAF"
-outp <- "/home2/sjim/openKoGES/RESULT_manuscript_final/Figure2/Figure2C.png"
+pref <- file.path(REPO_ROOT, "DATA_manuscript_final", "Figure2", "KoGES_autosome_MAF")
+outp <- file.path(REPO_ROOT, "RESULT_manuscript_final", "Figure2", "Figure2C.png")
 
 # -----------------------------------------------------------------------------
 # 0) Load PLINK2 allele-frequency table

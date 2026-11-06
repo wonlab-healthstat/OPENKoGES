@@ -15,8 +15,8 @@
 #   LDSC tools and East Asian LD-score reference
 #
 # Outputs (intermediate LDSC logs / munged sumstats):
-#   /data4/joh/openkoges/table_new0923/intermediate/suppletable3/ldsc_260923/
-#   /data4/joh/openkoges/table_new0923/intermediate/suppletable3/ldsc_binary_260924/
+#   {OPENKOGES_AUX_DIR}/table_new0923/intermediate/suppletable3/ldsc_260923/
+#   {OPENKOGES_AUX_DIR}/table_new0923/intermediate/suppletable3/ldsc_binary_260924/
 #
 # Summary tables: Rscript SuppleTable3.r
 #
@@ -30,12 +30,52 @@ suppressPackageStartupMessages({
   library(readxl)
 })
 
+
+# Resolve openKoGES repo root without hard-coding host absolute paths.
+.openkoges_repo_root <- function() {
+  env <- Sys.getenv("OPENKOGES_ROOT", unset = "")
+  if (nzchar(env)) return(normalizePath(env, winslash = "/", mustWork = FALSE))
+  args <- commandArgs(trailingOnly = FALSE)
+  fa <- sub("^--file=", "", args[startsWith(args, "--file=")])
+  start <- if (length(fa)) dirname(normalizePath(fa[[1]], winslash = "/", mustWork = FALSE)) else getwd()
+  d <- normalizePath(start, winslash = "/", mustWork = FALSE)
+  for (i in seq_len(12L)) {
+    if (dir.exists(file.path(d, "CODE_manuscript_final")) &&
+        dir.exists(file.path(d, "DATA_manuscript_final"))) {
+      return(d)
+    }
+    parent <- dirname(d)
+    if (identical(parent, d)) break
+    d <- parent
+  }
+  stop("Could not locate openKoGES root; set OPENKOGES_ROOT.", call. = FALSE)
+}
+REPO_ROOT <- .openkoges_repo_root()
+
+.require_env_dir <- function(name) {
+  val <- Sys.getenv(name, unset = "")
+  if (!nzchar(val)) {
+    stop(sprintf("Set environment variable %s (directory path).", name), call. = FALSE)
+  }
+  normalizePath(val, winslash = "/", mustWork = FALSE)
+}
+
+
+OPENGWAS_DIR <- .require_env_dir("OPENGWAS_DIR")
+LDSC_DIR <- .require_env_dir("LDSC_DIR")
+OPENKOGES_AUX_DIR <- .require_env_dir("OPENKOGES_AUX_DIR")
+
+REVISION_ROOT <- Sys.getenv(
+  "OPENKOGES_REVISION_ROOT",
+  unset = file.path(dirname(REPO_ROOT), "openKoGES_revision")
+)
+
 ###############################################################################
 # Paths (self-contained; no external config)
 ###############################################################################
 
-CONT <- "/data4/joh/openkoges/table_new0923/intermediate/suppletable3/ldsc_260923"
-BIN  <- "/data4/joh/openkoges/table_new0923/intermediate/suppletable3/ldsc_binary_260924"
+CONT <- file.path(OPENKOGES_AUX_DIR, "table_new0923", "intermediate", "suppletable3", "ldsc_260923")
+BIN  <- file.path(OPENKOGES_AUX_DIR, "table_new0923", "intermediate", "suppletable3", "ldsc_binary_260924")
 dir.create(file.path(CONT, "munge"), recursive = TRUE, showWarnings = FALSE)
 dir.create(file.path(CONT, "h2"), recursive = TRUE, showWarnings = FALSE)
 dir.create(file.path(CONT, "logs"), recursive = TRUE, showWarnings = FALSE)
@@ -44,14 +84,14 @@ dir.create(file.path(BIN, "munge"), recursive = TRUE, showWarnings = FALSE)
 dir.create(file.path(BIN, "h2"), recursive = TRUE, showWarnings = FALSE)
 dir.create(file.path(BIN, "logs"), recursive = TRUE, showWarnings = FALSE)
 
-LDSC <- "/home2/eksong/OpenKoGES/LDSC/tools"
+LDSC <- LDSC_DIR
 HM3  <- file.path(LDSC, "w_hm3.snplist")
 EAS  <- file.path(LDSC, "eas_ldscores")
 Sys.setenv(PYTHONPATH = LDSC)
 
-XLSX <- "/data4/sjim/openKoGES_revision/sumstats/EUR/KoGES_EUR_EAS_matching_sjim_260913.xlsx"
-SAIGE_DIR <- "/data6/OpenGWAS/KBA160K_longitudinal/Result/GWAS_sumstat"
-BOLT_LDL_SRC <- "/data6/OpenGWAS/KBA160K/Result/BOLT-LMM/RIN_B_LDLclean_BOLT_result"
+XLSX <- file.path(REVISION_ROOT, "sumstats", "EUR", "KoGES_EUR_EAS_matching_sjim_260913.xlsx")
+SAIGE_DIR <- file.path(OPENGWAS_DIR, "KBA160K_longitudinal", "Result", "GWAS_sumstat")
+BOLT_LDL_SRC <- file.path(OPENGWAS_DIR, "KBA160K", "Result", "BOLT-LMM", "RIN_B_LDLclean_BOLT_result")
 
 bin_label <- c(
   HTN2 = "Hypertension", DM2 = "Diabetes mellitus", LIP = "Hyperlipidemia",

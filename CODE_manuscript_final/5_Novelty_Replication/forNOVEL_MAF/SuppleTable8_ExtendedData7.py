@@ -30,7 +30,19 @@ import numpy as np
 import pandas as pd
 from scipy import stats
 
-REPO_ROOT        = Path("/home2/sjim/openKoGES")
+def _openkoges_repo_root() -> Path:
+    import os
+    env = os.environ.get("OPENKOGES_ROOT", "").strip()
+    if env:
+        return Path(env).resolve()
+    start = Path(__file__).resolve().parent
+    for p in [start, *start.parents]:
+        if (p / "CODE_manuscript_final").is_dir() and (p / "DATA_manuscript_final").is_dir():
+            return p
+    raise RuntimeError("Could not locate openKoGES root; set OPENKOGES_ROOT.")
+
+
+REPO_ROOT = _openkoges_repo_root()
 DEFAULT_ED_XLSX  = REPO_ROOT / "RESULT_manuscript_final" / "ExtendedData" / "ExtendedData.xlsx"
 DEFAULT_TSV_DIR  = REPO_ROOT / "DATA_manuscript_final" / "Extended_Data"
 DEFAULT_ED_OUT    = REPO_ROOT / "RESULT_manuscript_final" / "ExtendedData"

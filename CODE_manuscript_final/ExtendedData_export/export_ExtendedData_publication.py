@@ -31,7 +31,20 @@ from openpyxl.utils.dataframe import dataframe_to_rows
 from scipy.optimize import minimize_scalar
 from scipy.stats import norm
 
-ROOT = Path("/home2/sjim/openKoGES")
+def _openkoges_repo_root() -> Path:
+    import os
+    env = os.environ.get("OPENKOGES_ROOT", "").strip()
+    if env:
+        return Path(env).resolve()
+    start = Path(__file__).resolve().parent
+    for p in [start, *start.parents]:
+        if (p / "CODE_manuscript_final").is_dir() and (p / "DATA_manuscript_final").is_dir():
+            return p
+    raise RuntimeError("Could not locate openKoGES root; set OPENKOGES_ROOT.")
+
+
+ROOT = _openkoges_repo_root()
+REPO_ROOT = ROOT
 OUT_DIR = ROOT / "RESULT_manuscript_final" / "ExtendedData"
 INTERMEDIATE_DIR = ROOT / "DATA_manuscript_final" / "ExtendedData"
 CODE_DIR = Path(__file__).resolve().parent

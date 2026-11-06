@@ -51,15 +51,37 @@ suppressPackageStartupMessages({
   library(readxl)
 })
 
+
+# Resolve openKoGES repo root without hard-coding host absolute paths.
+.openkoges_repo_root <- function() {
+  env <- Sys.getenv("OPENKOGES_ROOT", unset = "")
+  if (nzchar(env)) return(normalizePath(env, winslash = "/", mustWork = FALSE))
+  args <- commandArgs(trailingOnly = FALSE)
+  fa <- sub("^--file=", "", args[startsWith(args, "--file=")])
+  start <- if (length(fa)) dirname(normalizePath(fa[[1]], winslash = "/", mustWork = FALSE)) else getwd()
+  d <- normalizePath(start, winslash = "/", mustWork = FALSE)
+  for (i in seq_len(12L)) {
+    if (dir.exists(file.path(d, "CODE_manuscript_final")) &&
+        dir.exists(file.path(d, "DATA_manuscript_final"))) {
+      return(d)
+    }
+    parent <- dirname(d)
+    if (identical(parent, d)) break
+    d <- parent
+  }
+  stop("Could not locate openKoGES root; set OPENKOGES_ROOT.", call. = FALSE)
+}
+REPO_ROOT <- .openkoges_repo_root()
+
 group <- Sys.getenv("GROUP", unset = "Cate")
-ext_dir <- "/home2/sjim/openKoGES/DATA_manuscript_final/Extended_Data"
+ext_dir <- file.path(REPO_ROOT, "DATA_manuscript_final", "Extended_Data")
 if (group == "Cont") {
   variant_tsv_path <- file.path(ext_dir, "Cont_lead_variants_hg38.tsv")
 } else {
   variant_tsv_path <- file.path(ext_dir, "Cate_lead_variants_hg38.tsv")
 }
-excel_path <- "/home2/sjim/openKoGES/DATA_baseline/forGWAS_annot/koges_EFOID.xlsx"
-assoc_zip_path <-  "/home2/sjim/openKoGES/DATA_baseline/forGWAS_annot/gwas-catalog-associations_ontology-annotated-full.zip"
+excel_path <- file.path(REPO_ROOT, "DATA_baseline", "forGWAS_annot", "koges_EFOID.xlsx")
+assoc_zip_path <-  file.path(REPO_ROOT, "DATA_baseline", "forGWAS_annot", "gwas-catalog-associations_ontology-annotated-full.zip")
 internal_tsv <-  "gwas-catalog-download-associations-alt-full.tsv"
 
 window_bp <- as.integer(Sys.getenv("WINDOW_BP", unset = "1000000"))

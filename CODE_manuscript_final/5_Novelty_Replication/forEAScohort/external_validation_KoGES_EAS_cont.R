@@ -28,6 +28,32 @@ suppressPackageStartupMessages({
   library(data.table)
 })
 
+
+# Resolve openKoGES repo root without hard-coding host absolute paths.
+.openkoges_repo_root <- function() {
+  env <- Sys.getenv("OPENKOGES_ROOT", unset = "")
+  if (nzchar(env)) return(normalizePath(env, winslash = "/", mustWork = FALSE))
+  args <- commandArgs(trailingOnly = FALSE)
+  fa <- sub("^--file=", "", args[startsWith(args, "--file=")])
+  start <- if (length(fa)) dirname(normalizePath(fa[[1]], winslash = "/", mustWork = FALSE)) else getwd()
+  d <- normalizePath(start, winslash = "/", mustWork = FALSE)
+  for (i in seq_len(12L)) {
+    if (dir.exists(file.path(d, "CODE_manuscript_final")) &&
+        dir.exists(file.path(d, "DATA_manuscript_final"))) {
+      return(d)
+    }
+    parent <- dirname(d)
+    if (identical(parent, d)) break
+    d <- parent
+  }
+  stop("Could not locate openKoGES root; set OPENKOGES_ROOT.", call. = FALSE)
+}
+REPO_ROOT <- .openkoges_repo_root()
+REVISION_ROOT <- Sys.getenv(
+  "OPENKOGES_REVISION_ROOT",
+  unset = file.path(dirname(REPO_ROOT), "openKoGES_revision")
+)
+
 # -----------------------------------------------------------------------------
 # Paths
 # -----------------------------------------------------------------------------
@@ -64,7 +90,7 @@ pfx <- tolower(COHORT)
 
 KOGES_LEAD_FILE <- Sys.getenv(
   "KOGES_LEAD_FILE",
-  "/home2/sjim/openKoGES/DATA_manuscript_final/Extended_Data/Cont_lead_variants.tsv"
+  file.path(REPO_ROOT, "DATA_manuscript_final", "Extended_Data", "Cont_lead_variants.tsv")
 )
 
 EXT_DIR <- Sys.getenv("EXT_DIR", "")
@@ -79,7 +105,7 @@ if (!nzchar(EXT_DIR)) {
     alt
   } else {
     file.path(
-      "/data4/sjim/openKoGES_revision/DATA_baseline/forEAScohort",
+      file.path(REVISION_ROOT, "DATA_baseline", "forEAScohort"),
       COHORT, "Cont"
     )
   }
@@ -87,7 +113,7 @@ if (!nzchar(EXT_DIR)) {
 
 OUTPUT_DIR <- Sys.getenv(
   "OUTPUT_DIR",
-  "/home2/sjim/openKoGES/DATA_manuscript_final/Extended_Data"
+  file.path(REPO_ROOT, "DATA_manuscript_final", "Extended_Data")
 )
 
 NOVELTY_WINDOW_BP <- as.integer(Sys.getenv("NOVELTY_WINDOW_BP", "1000000"))

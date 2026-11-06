@@ -9,7 +9,7 @@
 #       has no N column. MCH=128028, MCV=129832, GGT=133471.
 #     - TWB: GCST*.tsv.gz-meta.yaml sample_size (= constant n in sumstat).
 #       Most continuous = 92615; FEV1/FVC (GCST90278627) = 62901.
-#     - TPMI: unique N column in /data6/TPMIsumstat/{trait}.saige.txt.gz
+#     - TPMI: unique N column in {TPMI_SUMSTAT_DIR}/{trait}.saige.txt.gz
 #       (constant across variants). HR -> B_PULSE N=141961.
 #
 # Outputs
@@ -26,15 +26,37 @@
 #   - TPMI heart rate uses trait HR -> output_stem B_PULSE (N=141961).
 ################################################################################
 
+
+# Resolve openKoGES repo root without hard-coding host absolute paths.
+.openkoges_repo_root <- function() {
+  env <- Sys.getenv("OPENKOGES_ROOT", unset = "")
+  if (nzchar(env)) return(normalizePath(env, winslash = "/", mustWork = FALSE))
+  args <- commandArgs(trailingOnly = FALSE)
+  fa <- sub("^--file=", "", args[startsWith(args, "--file=")])
+  start <- if (length(fa)) dirname(normalizePath(fa[[1]], winslash = "/", mustWork = FALSE)) else getwd()
+  d <- normalizePath(start, winslash = "/", mustWork = FALSE)
+  for (i in seq_len(12L)) {
+    if (dir.exists(file.path(d, "CODE_manuscript_final")) &&
+        dir.exists(file.path(d, "DATA_manuscript_final"))) {
+      return(d)
+    }
+    parent <- dirname(d)
+    if (identical(parent, d)) break
+    d <- parent
+  }
+  stop("Could not locate openKoGES root; set OPENKOGES_ROOT.", call. = FALSE)
+}
+REPO_ROOT <- .openkoges_repo_root()
+
 suppressPackageStartupMessages(library(data.table))
 
 out_n_path <- Sys.getenv(
   "EAS_EXTERNAL_N_PATH",
-  "/home2/sjim/openKoGES/DATA_manuscript_final/Extended_Data/eas_external_phenotype_N.tsv"
+  file.path(REPO_ROOT, "DATA_manuscript_final", "Extended_Data", "eas_external_phenotype_N.tsv")
 )
 out_elig_path <- Sys.getenv(
   "EAS_PANEL_ELIGIBILITY_PATH",
-  "/home2/sjim/openKoGES/DATA_manuscript_final/Extended_Data/eas_panel_phenotype_eligibility.tsv"
+  file.path(REPO_ROOT, "DATA_manuscript_final", "Extended_Data", "eas_panel_phenotype_eligibility.tsv")
 )
 
 # ------------------------------------------------------------------------------
