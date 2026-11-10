@@ -14,3 +14,4 @@
 # Python bytecode (may embed absolute source paths)
 __pycache__/
 *.py[cod]
+RESULT_manuscript_final/

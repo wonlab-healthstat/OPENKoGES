@@ -1,9 +1,0 @@
-Trait type,Classification,N,% of total EAS-novel,% of analyzed,"Shrinkage ratio (median, IQR)","KoGES/EAS beta ratio (median, IQR)",KoGES n > each cohort n,KoGES n > EAS panel total n
-Binary,Not analyzed in EAS panel,15,25.0%,—,0.080 (0.070–0.386),—,0/15 (0.0%),0/15 (0.0%)
-Binary,WC-sensitive + EAS GWS,0,0.0%,0.0%,—,—,—,—
-Binary,WC-sensitive + EAS nominal,21,35.0%,46.7%,0.590 (0.097–0.792),2.14x (1.61–2.58x),0/21 (0.0%),0/21 (0.0%)
-Binary,WC-sensitive + no EAS signal,13,21.7%,28.9%,0.360 (0.075–0.684),5.51x (4.21–14.97x),1/13 (7.7%),1/13 (7.7%)
-Binary,WC-robust + EAS GWS,0,0.0%,0.0%,—,—,—,—
-Binary,WC-robust + EAS nominal,10,16.7%,22.2%,0.944 (0.897–0.966),2.30x (2.20–2.68x),0/10 (0.0%),0/10 (0.0%)
-Binary,WC-robust + EAS non-sig,1,1.7%,2.2%,0.895 (0.895–0.895),4.57x (4.57–4.57x),0/1 (0.0%),0/1 (0.0%)
-Binary,Total EAS-novel,60,100%,45/60 analyzed,—,—,—,—
